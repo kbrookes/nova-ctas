@@ -1,0 +1,71 @@
+.ibcta-button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007cba;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 20px;
+}
+
+.ibcta-button:hover {
+    background-color: #006ba1;
+    color: #fff;
+}
+
+.ibcta-content {
+    margin: 15px 0;
+}
+
+.ibcta-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.ibcta-content-column {
+    flex: 1 1 auto;
+}
+
+.ibcta-image-column {
+    flex: 1 1 auto;
+}
+
+/* Apply column widths when image exists */
+.ibcta-has-image .ibcta-content-column {
+    width: var(--ibcta-content-width, 60%);
+}
+
+.ibcta-has-image .ibcta-image-column {
+    width: var(--ibcta-image-width, 40%);
+}
+
+/* Column order */
+.ibcta-column-order-image-content {
+    flex-direction: row-reverse;
+}
+
+/* Alignment classes */
+.ibcta-align-left {
+    text-align: left;
+}
+
+.ibcta-align-center {
+    text-align: center;
+}
+
+.ibcta-align-right {
+    text-align: right;
+}
+
+/* Responsive layout */
+@media (max-width: 767px) {
+    .ibcta-columns {
+        flex-direction: column !important;
+    }
+
+    .ibcta-content-column,
+    .ibcta-image-column {
+        width: 100% !important;
+    }
+}

@@ -1,0 +1,51 @@
+.wp-block-internal-blog-cta-related-posts {
+    margin: 2em 0;
+}
+
+.ibcta-related-posts .ibcta-posts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ibcta-related-posts .ibcta-post-item {
+    margin-bottom: 1.5em;
+}
+
+/* Grid Layout */
+.ibcta-layout-grid .ibcta-posts-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2em;
+}
+
+.ibcta-post-thumbnail {
+    margin-bottom: 1em;
+}
+
+.ibcta-post-thumbnail img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.ibcta-post-title {
+    margin: 0 0 0.5em;
+}
+
+.ibcta-post-title a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.ibcta-post-excerpt {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .ibcta-layout-grid .ibcta-posts-list {
+        grid-template-columns: 1fr;
+    }
+}

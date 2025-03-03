@@ -1,0 +1,311 @@
+.ibcta-settings-page .form-table th {
+    width: 250px;
+}
+
+.ibcta-settings-page textarea {
+    min-height: 100px;
+}
+
+.ibcta-settings-page .description {
+    margin-top: 5px;
+    color: #666;
+}
+
+/* Settings Wrapper */
+.ibcta-settings-wrapper {
+    padding: 0; /* Remove wrapper padding since we're handling it in the content */
+}
+
+.ibcta-settings-section {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    margin-bottom: 20px;
+}
+
+.ibcta-settings-section h3 {
+    margin: 0;
+    padding: 12px 24px; /* Align with WordPress standard padding */
+    border-bottom: 1px solid #ccd0d4;
+    background: #f8f9f9;
+    font-size: 14px;
+}
+
+/* Form table adjustments */
+.ibcta-settings-section .form-table {
+    margin: 0;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ibcta-settings-section .form-table tbody {
+    display: block;
+    padding: 15px 24px; /* Add padding to tbody instead of table */
+}
+
+.ibcta-settings-section .form-table tr {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.ibcta-settings-section .form-table th {
+    flex: 0 0 200px;
+    padding: 8px 10px 8px 0;
+}
+
+.ibcta-settings-section .form-table td {
+    flex: 1;
+    padding: 8px 0;
+}
+
+/* Media uploader styles */
+.ibcta-media-wrapper {
+    margin: 10px 0;
+}
+
+.ibcta-preview-image {
+    max-width: 300px;
+    margin-bottom: 10px;
+}
+
+.ibcta-preview-image img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.ibcta-remove-image {
+    margin-left: 8px !important;
+}
+
+/* Color picker styles */
+.ibcta-color-field {
+    position: relative;
+}
+
+.wp-picker-container {
+    display: inline-block;
+}
+
+/* Range input styles */
+input[type="range"] {
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.opacity-value {
+    display: inline-block;
+    min-width: 40px;
+}
+
+/* Relationship settings in sidebar */
+#ibcta_relationships .inside {
+    margin: 0;
+    padding: 12px;
+}
+
+.ibcta-categories {
+    margin-top: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.ibcta-categories p {
+    margin: 8px 0;
+}
+
+.ibcta-categories label {
+    display: block;
+    margin: 2px 0;
+}
+
+/* Color Picker and Swatches */
+.ibcta-color-field {
+    position: relative;
+}
+
+.ibcta-color-presets {
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: #fff;
+}
+
+.ibcta-color-palette-group {
+    margin-bottom: 15px;
+}
+
+.ibcta-color-palette-group h4 {
+    margin: 0 0 8px;
+    font-size: 13px;
+}
+
+.ibcta-color-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ibcta-color-swatch {
+    width: 24px;
+    height: 24px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.1s ease;
+}
+
+.ibcta-color-swatch:hover {
+    transform: scale(1.1);
+}
+
+/* Range Slider */
+input[type="range"] {
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+.opacity-value {
+    display: inline-block;
+    min-width: 40px;
+}
+
+/* Tab Navigation */
+.ibcta-tabs {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccd0d4;
+    padding: 0 24px;  /* Add padding to align with title */
+}
+
+.ibcta-tab-button {
+    padding: 10px 20px;
+    margin: 0 4px -1px 0;
+    font-size: 14px;
+    line-height: 1.71428571;
+    font-weight: 600;
+    background: #f0f0f1;
+    border: 1px solid #ccd0d4;
+    border-bottom: none;
+    cursor: pointer;
+}
+
+.ibcta-tab-button:focus {
+    outline: none;  /* Remove focus outline */
+    box-shadow: none;  /* Remove focus shadow */
+}
+
+.ibcta-tab-button.active {
+    background: #fff;
+    border-bottom-color: #fff;
+}
+
+.ibcta-tab-content {
+    display: none;
+    padding: 0 24px;  /* Add padding to align content with title */
+}
+
+.ibcta-tab-content.active {
+    display: block;
+}
+
+/* Spacing Inputs */
+.ibcta-spacing-inputs {
+    display: flex;
+    gap: 15px;
+}
+
+.ibcta-spacing-inputs label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.ibcta-spacing-inputs span {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Shadow Controls */
+.ibcta-shadow-controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.ibcta-shadow-controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ibcta-shadow-controls span {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Add to existing styles */
+/* Typography Controls */
+.ibcta-typography-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.ibcta-typography-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.ibcta-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ibcta-input-group label {
+    font-size: 12px;
+    color: #666;
+}
+
+.ibcta-input-group input[type="text"],
+.ibcta-input-group select {
+    min-width: 200px;
+}
+
+.ibcta-button-group {
+    display: flex;
+    gap: 1px;
+    background: #ccd0d4;
+    padding: 1px;
+    border-radius: 3px;
+    width: fit-content;
+}
+
+.ibcta-alignment-button {
+    padding: 4px 12px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+}
+
+.ibcta-alignment-button img {
+    width: 16px;
+    height: 16px;
+    display: block;
+    margin: 0 auto;
+}
+
+.ibcta-alignment-button:hover {
+    background: #f0f0f1;
+}
+
+.ibcta-alignment-button.active {
+    background: #007cba;
+    color: #fff;
+}
