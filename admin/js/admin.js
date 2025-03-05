@@ -83,6 +83,8 @@
         initColorPickers();
         initOpacitySlider();
         initCollapsibleSections();
+
+        $('.nova-color-picker').wpColorPicker();
     });
 
     // Add to existing JavaScript

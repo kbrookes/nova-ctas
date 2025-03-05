@@ -30,6 +30,10 @@ if (!defined('NOVA_CTAS_PLUGIN_FILE')) {
 }
 
 // Include required files
+require_once NOVA_CTAS_PLUGIN_DIR . 'includes/class-nova-taxonomy.php';
+require_once NOVA_CTAS_PLUGIN_DIR . 'includes/class-nova-related-posts.php';
+require_once NOVA_CTAS_PLUGIN_DIR . 'includes/class-nova-related-posts-widget.php';
+require_once NOVA_CTAS_PLUGIN_DIR . 'includes/class-nova-shortcode.php';
 require_once NOVA_CTAS_PLUGIN_DIR . 'includes/class-nova-cta-manager.php';
 
 // Initialize plugin components
@@ -38,6 +42,14 @@ function nova_ctas_setup() {
     
     // Initialize CTA manager
     $nova_ctas_manager = new Nova_CTA_Manager();
+    
+    // Register the widget
+    add_action('widgets_init', function() {
+        register_widget('Nova_Related_Posts_Widget');
+    });
+    
+    // Initialize taxonomy
+    new Nova_Taxonomy();
     
     // Load text domain for internationalization
     load_plugin_textdomain('nova-ctas', false, dirname(plugin_basename(__FILE__)) . '/languages');
@@ -48,6 +60,11 @@ add_action('init', 'nova_ctas_setup', 0);
 register_activation_hook(__FILE__, function() {
     $cta_manager = new Nova_CTA_Manager();
     $cta_manager->register_cta_post_type();
+    
+    // Also register the taxonomy on activation
+    $taxonomy = new Nova_Taxonomy();
+    $taxonomy->register_taxonomies();
+    
     flush_rewrite_rules();
 });
 
