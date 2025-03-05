@@ -29,7 +29,7 @@ Initial release of Nova CTAs plugin.
 
 ## Author
 
-Keith Brookes
+Kelsey Brookes
 
 ## License
 
