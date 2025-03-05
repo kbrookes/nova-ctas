@@ -104,3 +104,69 @@
         margin: 1.5em 0;
     }
 }
+
+/* Column Layout */
+.nova-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.nova-content-column {
+    flex: 1 1 auto;
+}
+
+.nova-image-column {
+    flex: 1 1 auto;
+}
+
+/* Apply column widths when image exists */
+.nova-has-image .nova-content-column {
+    width: var(--nova-content-width, 60%);
+}
+
+.nova-has-image .nova-image-column {
+    width: var(--nova-image-width, 40%);
+}
+
+/* Column order */
+.nova-column-order-image-content {
+    flex-direction: row-reverse;
+}
+
+/* Alignment classes */
+.nova-align-left {
+    text-align: left;
+}
+
+.nova-align-center {
+    text-align: center;
+}
+
+.nova-align-right {
+    text-align: right;
+}
+
+/* Image styles */
+.nova-image-column img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+    .nova-cta-container {
+        padding: 1.5em;
+        margin: 1.5em 0;
+    }
+
+    .nova-columns {
+        flex-direction: column !important;
+    }
+
+    .nova-content-column,
+    .nova-image-column {
+        width: 100% !important;
+    }
+}
