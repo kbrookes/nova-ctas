@@ -265,6 +265,11 @@
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+    .nova-cta {
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+
     .nova-cta-container {
         flex-direction: column !important;
         gap: 1.5rem;
@@ -290,13 +295,8 @@
 
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
-    .nova-cta {
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
     .nova-cta:not([style*="background-color"]) {
-        background-color: #2d2d2d;
-        color: #ffffff;
+        background-color: transparent;
     }
 
     .nova-button:not([style*="background-color"]) {

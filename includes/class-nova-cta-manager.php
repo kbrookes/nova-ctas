@@ -787,7 +787,7 @@ class Nova_CTA_Manager {
                 'nova-cta-align-' . $content_alignment
             );
 
-            // Build inline styles array
+            // Build inline styles array for main container
             $styles = array();
             
             // Background styles

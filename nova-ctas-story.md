@@ -141,6 +141,15 @@ The plugin currently provides:
   - Inline stylesheet generation
   - Conditional loading
   - Mobile optimization
+- [ ] Future background control improvements
+  - Separate background controls for main container and content container
+  - Individual color pickers for each container
+  - Gradient background options
+  - Background image opacity control
+  - Background pattern library
+  - Hover state background effects
+  - Background animation options
+  - Mobile-specific background settings
 
 ## Plugin Architecture
 ```

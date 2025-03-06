@@ -381,4 +381,58 @@
     .nova-display-settings .nova-field-group label {
         margin-bottom: 8px;
     }
+}
+
+/* Alignment Controls */
+.nova-alignment-controls {
+    display: flex;
+    gap: 4px;
+    background: #fff;
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.nova-alignment-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    background: transparent;
+    transition: all 0.2s ease;
+}
+
+.nova-alignment-option:hover {
+    background: #f0f0f0;
+}
+
+.nova-alignment-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.nova-alignment-option img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+.nova-alignment-option input[type="radio"]:checked + img {
+    filter: invert(36%) sepia(38%) saturate(3032%) hue-rotate(183deg) brightness(97%) contrast(98%);
+}
+
+.nova-alignment-option input[type="radio"]:focus + img {
+    outline: 2px solid #007cba;
+    outline-offset: 1px;
+}
+
+.nova-alignment-option input[type="radio"]:checked ~ label {
+    background: #f0f0f0;
+    border-color: #007cba;
 } 
