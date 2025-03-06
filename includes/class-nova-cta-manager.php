@@ -190,7 +190,7 @@ class Nova_CTA_Manager {
                         echo '<div class="nova-categories-list">';
                         foreach ($categories as $category) {
                             printf(
-                                '<label><input type="checkbox" name="nova_cta_settings[display_categories][]" value="%d" %s> %s</label>',
+                                '<label><input type="checkbox" name="nova_cta_settings[display_categories][]" value="%d" %s> %s</label><br>',
                                 $category->term_id,
                                 checked(in_array($category->term_id, $display_categories), true, false),
                                 esc_html($category->name)
@@ -519,49 +519,36 @@ class Nova_CTA_Manager {
 
         // Save content
         if (isset($_POST['content'])) {
-            $content = wp_kses_post($_POST['content']);
-            $post_data = array(
+            wp_update_post(array(
                 'ID' => $post_id,
-                'post_content' => $content
-            );
-            wp_update_post($post_data);
+                'post_content' => wp_kses_post($_POST['content'])
+            ));
         }
 
         // Save settings (including categories and pillar page)
         if (isset($_POST['nova_cta_settings'])) {
             $settings = $_POST['nova_cta_settings'];
             
-            // Initialize arrays if not set
+            // Ensure display_categories is an array
             if (!isset($settings['display_categories'])) {
                 $settings['display_categories'] = array();
             }
-
-            // Ensure display_categories is always an array
-            $settings['display_categories'] = (array)$settings['display_categories'];
             
             // Sanitize settings
             $sanitized_settings = array(
                 'button_text' => isset($settings['button_text']) ? sanitize_text_field($settings['button_text']) : '',
                 'button_url' => isset($settings['button_url']) ? esc_url_raw($settings['button_url']) : '',
                 'button_target' => isset($settings['button_target']) ? sanitize_text_field($settings['button_target']) : '_self',
-                'display_categories' => array_map('absint', $settings['display_categories']),
+                'display_categories' => array_map('absint', (array)$settings['display_categories']),
                 'pillar_page' => isset($settings['pillar_page']) ? absint($settings['pillar_page']) : ''
             );
             
             update_post_meta($post_id, '_nova_cta_settings', $sanitized_settings);
-        } else {
-            // If no settings were posted, clear the categories
-            $settings = get_post_meta($post_id, '_nova_cta_settings', true);
-            if ($settings) {
-                $settings['display_categories'] = array();
-                update_post_meta($post_id, '_nova_cta_settings', $settings);
-            }
         }
 
         // Save design settings
         if (isset($_POST['nova_cta_design'])) {
-            $design = $_POST['nova_cta_design'];
-            update_post_meta($post_id, '_nova_cta_design', $this->sanitize_design_settings($design));
+            update_post_meta($post_id, '_nova_cta_design', $this->sanitize_design_settings($_POST['nova_cta_design']));
         }
 
         // Save display settings
