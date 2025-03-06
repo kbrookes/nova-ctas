@@ -535,7 +535,47 @@ class Nova_CTA_Manager {
     }
 
     private function sanitize_design_settings($design) {
-        // ... existing sanitize_design_settings code ...
+        $sanitized = array();
+        
+        // Box Design Settings
+        $sanitized['border_radius'] = isset($design['border_radius']) ? sanitize_text_field($design['border_radius']) : '0';
+        
+        // Padding
+        $sanitized['padding_top'] = isset($design['padding_top']) ? absint($design['padding_top']) : 30;
+        $sanitized['padding_right'] = isset($design['padding_right']) ? absint($design['padding_right']) : 30;
+        $sanitized['padding_bottom'] = isset($design['padding_bottom']) ? absint($design['padding_bottom']) : 30;
+        $sanitized['padding_left'] = isset($design['padding_left']) ? absint($design['padding_left']) : 30;
+        
+        // Margin
+        $sanitized['margin_top'] = isset($design['margin_top']) ? absint($design['margin_top']) : 60;
+        $sanitized['margin_right'] = isset($design['margin_right']) ? absint($design['margin_right']) : 0;
+        $sanitized['margin_bottom'] = isset($design['margin_bottom']) ? absint($design['margin_bottom']) : 60;
+        $sanitized['margin_left'] = isset($design['margin_left']) ? absint($design['margin_left']) : 0;
+        
+        // Shadow
+        $sanitized['shadow_x'] = isset($design['shadow_x']) ? absint($design['shadow_x']) : 0;
+        $sanitized['shadow_y'] = isset($design['shadow_y']) ? absint($design['shadow_y']) : 0;
+        $sanitized['shadow_blur'] = isset($design['shadow_blur']) ? absint($design['shadow_blur']) : 0;
+        $sanitized['shadow_spread'] = isset($design['shadow_spread']) ? absint($design['shadow_spread']) : 0;
+        $sanitized['shadow_color'] = isset($design['shadow_color']) ? sanitize_text_field($design['shadow_color']) : 'rgba(0,0,0,0)';
+        
+        // Background Settings
+        $sanitized['bg_color'] = isset($design['bg_color']) ? sanitize_text_field($design['bg_color']) : '#f8f9fa';
+        $sanitized['bg_image'] = isset($design['bg_image']) ? absint($design['bg_image']) : '';
+        $sanitized['bg_position'] = isset($design['bg_position']) ? sanitize_text_field($design['bg_position']) : 'center center';
+        $sanitized['bg_size'] = isset($design['bg_size']) ? sanitize_text_field($design['bg_size']) : 'cover';
+        $sanitized['overlay_color'] = isset($design['overlay_color']) ? sanitize_text_field($design['overlay_color']) : '';
+        $sanitized['overlay_opacity'] = isset($design['overlay_opacity']) ? absint($design['overlay_opacity']) : 50;
+        
+        // Typography Settings
+        $sanitized['title_color'] = isset($design['title_color']) ? sanitize_text_field($design['title_color']) : '';
+        $sanitized['title_font_size'] = isset($design['title_font_size']) ? sanitize_text_field($design['title_font_size']) : '2rem';
+        $sanitized['title_font_weight'] = isset($design['title_font_weight']) ? sanitize_text_field($design['title_font_weight']) : '700';
+        $sanitized['body_color'] = isset($design['body_color']) ? sanitize_text_field($design['body_color']) : '';
+        $sanitized['body_font_size'] = isset($design['body_font_size']) ? sanitize_text_field($design['body_font_size']) : '1rem';
+        $sanitized['body_font_weight'] = isset($design['body_font_weight']) ? sanitize_text_field($design['body_font_weight']) : '400';
+        
+        return $sanitized;
     }
 
     public function add_pillar_page_meta_box() {
