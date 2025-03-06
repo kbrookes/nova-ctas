@@ -175,112 +175,160 @@
 
 /* Base CTA Container */
 .nova-cta {
-    margin: 2em 0;
-    padding: 2em;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+/* CTA Title */
+.nova-cta-title {
+    margin: 0 0 1rem;
+    line-height: 1.2;
+    font-size: 1.75rem;
+    font-weight: 700;
 }
 
 /* CTA Content */
 .nova-cta-content {
-    margin-bottom: 1.5em;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
 }
 
-.nova-cta-content h2,
-.nova-cta-content h3,
-.nova-cta-content h4 {
+.nova-cta-content p:first-child {
     margin-top: 0;
-    color: inherit;
 }
 
 .nova-cta-content p:last-child {
     margin-bottom: 0;
 }
 
-/* CTA Button */
+/* CTA Button Base Styles */
 .nova-button {
-    display: inline-block;
-    padding: 0.8em 1.5em;
-    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 4px;
     text-decoration: none;
-    transition: all 0.3s ease;
     font-weight: 600;
     line-height: 1.4;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: none;
+    min-width: 120px;
 }
 
-/* Button Styles */
+/* Button Variations */
 .nova-cta-button-default .nova-button {
-    background-color: #0073aa;
+    background-color: #007bff;
     color: #ffffff;
-    border: none;
 }
 
 .nova-cta-button-default .nova-button:hover {
-    background-color: #005177;
-    color: #ffffff;
+    background-color: #0056b3;
+    transform: translateY(-1px);
 }
 
 .nova-cta-button-outline .nova-button {
     background-color: transparent;
-    border: 2px solid currentColor;
+    border: 2px solid #007bff;
+    color: #007bff;
 }
 
 .nova-cta-button-outline .nova-button:hover {
-    background-color: currentColor;
+    background-color: #007bff;
     color: #ffffff;
 }
 
-.nova-cta-button-minimal .nova-button {
+.nova-cta-button-ghost .nova-button {
     background-color: transparent;
     border: none;
-    padding: 0.5em 0;
-    border-bottom: 2px solid currentColor;
-    border-radius: 0;
+    color: #007bff;
+    padding: 0.5rem 0;
+    position: relative;
+    min-width: auto;
 }
 
-.nova-cta-button-minimal .nova-button:hover {
-    padding-bottom: 0.3em;
-    border-bottom-width: 4px;
+.nova-cta-button-ghost .nova-button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
 }
 
-/* Layout Variations */
+.nova-cta-button-ghost .nova-button:hover::after {
+    transform: scaleX(1);
+}
+
+/* CTA Layouts */
 .nova-cta-standard {
-    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
 }
 
 .nova-cta-centered {
-    text-align: center;
-}
-
-.nova-cta-split {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 2em;
+    text-align: center;
+    gap: 1.5rem;
 }
 
-.nova-cta-split .nova-cta-content {
-    flex: 1;
-    margin-bottom: 0;
+.nova-cta-horizontal {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    align-items: center;
 }
 
-.nova-cta-split .nova-cta-button {
-    flex-shrink: 0;
+/* Background Image Styles */
+.nova-cta[style*="background-image"] {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 }
 
-/* Responsive Styles */
-@media screen and (max-width: 768px) {
+/* Dark Background Text */
+.nova-cta[style*="background-color: #"] {
+    color: #ffffff;
+}
+
+.nova-cta[style*="background-color: #"] .nova-button {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+.nova-cta[style*="background-color: #"] .nova-button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
     .nova-cta {
-        padding: 1.5em;
+        padding: 1.5rem !important;
     }
 
-    .nova-cta-split {
-        flex-direction: column;
-        gap: 1.5em;
+    .nova-cta-title {
+        font-size: 1.5rem;
     }
 
-    .nova-cta-split .nova-cta-content {
-        margin-bottom: 1.5em;
+    .nova-cta-horizontal {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .nova-button {
+        width: 100%;
+        text-align: center;
     }
 }
 
@@ -288,5 +336,35 @@
 @media (prefers-color-scheme: dark) {
     .nova-cta {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .nova-cta:not([style*="background-color"]) {
+        background-color: #2d2d2d;
+        color: #ffffff;
+    }
+
+    .nova-button:not([style*="background-color"]) {
+        background-color: #4a4a4a;
+        color: #ffffff;
+    }
+
+    .nova-button:not([style*="background-color"]):hover {
+        background-color: #5a5a5a;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .nova-cta {
+        break-inside: avoid;
+        border: 1px solid #ddd !important;
+        background: none !important;
+        color: #000 !important;
+    }
+
+    .nova-button {
+        border: 1px solid #000 !important;
+        color: #000 !important;
+        background: none !important;
     }
 }
