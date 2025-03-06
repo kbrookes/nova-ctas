@@ -785,7 +785,12 @@ class Nova_CTA_Manager {
         }
 
         // Get post categories
-        $post_categories = wp_get_post_categories(get_the_ID());
+        $post_id = get_the_ID();
+        if (!$post_id) {
+            return $content;
+        }
+
+        $post_categories = wp_get_post_categories($post_id);
         if (empty($post_categories)) {
             return $content;
         }
@@ -794,7 +799,8 @@ class Nova_CTA_Manager {
         $ctas = get_posts(array(
             'post_type' => 'nova_cta',
             'posts_per_page' => -1,
-            'post_status' => 'publish'
+            'post_status' => 'publish',
+            'fields' => 'ids' // Only get post IDs for better performance
         ));
 
         if (empty($ctas)) {
@@ -802,14 +808,18 @@ class Nova_CTA_Manager {
         }
 
         $matching_ctas = array();
-        foreach ($ctas as $cta) {
-            $settings = get_post_meta($cta->ID, '_nova_cta_settings', true);
-            $display_categories = isset($settings['display_categories']) ? (array)$settings['display_categories'] : array();
+        foreach ($ctas as $cta_id) {
+            $settings = get_post_meta($cta_id, '_nova_cta_settings', true);
+            if (!is_array($settings) || empty($settings['display_categories'])) {
+                continue;
+            }
+
+            $display_categories = (array)$settings['display_categories'];
             
             // Check if this CTA should be displayed in any of the post's categories
             $matching_categories = array_intersect($post_categories, $display_categories);
             if (!empty($matching_categories)) {
-                $matching_ctas[] = $cta;
+                $matching_ctas[] = $cta_id;
             }
         }
 
@@ -817,23 +827,37 @@ class Nova_CTA_Manager {
             return $content;
         }
 
-        // Split content into paragraphs
-        $paragraphs = explode('</p>', $content);
+        // Only process content if we have matches
+        $paragraphs = preg_split('/<\/?p>/', $content);
+        $paragraphs = array_filter($paragraphs); // Remove empty elements
         $total_paragraphs = count($paragraphs);
 
-        foreach ($matching_ctas as $cta) {
-            $display = get_post_meta($cta->ID, '_nova_cta_display', true);
+        if ($total_paragraphs === 0) {
+            return $content; // Return original content if no paragraphs
+        }
+
+        foreach ($matching_ctas as $cta_id) {
+            $display = get_post_meta($cta_id, '_nova_cta_display', true);
+            if (!is_array($display)) {
+                continue;
+            }
             
-            // Get position settings
+            // Get position settings with safe defaults
             $first_position = isset($display['first_position']) ? absint($display['first_position']) : 30;
             $show_end = isset($display['show_end']) ? (bool)$display['show_end'] : true;
 
             // Calculate position to insert CTA
-            $insert_position = floor(($total_paragraphs * $first_position) / 100);
+            $insert_position = max(1, min($total_paragraphs - 1, floor(($total_paragraphs * $first_position) / 100)));
             
             // Ensure we don't insert too close to the end if showing at end
             if ($show_end && $insert_position > ($total_paragraphs - 3)) {
                 $insert_position = floor($total_paragraphs / 2);
+            }
+
+            // Get CTA post object
+            $cta = get_post($cta_id);
+            if (!$cta || $cta->post_type !== 'nova_cta') {
+                continue;
             }
 
             // Insert CTA at calculated position
@@ -847,7 +871,15 @@ class Nova_CTA_Manager {
             }
         }
 
-        return implode('</p>', $paragraphs);
+        // Rebuild content with proper paragraph tags
+        $modified_content = '';
+        foreach ($paragraphs as $p) {
+            if (!empty($p)) {
+                $modified_content .= '<p>' . trim($p) . '</p>';
+            }
+        }
+
+        return $modified_content;
     }
 
     public function render_relationship_settings($post) {
