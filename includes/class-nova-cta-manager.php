@@ -144,7 +144,10 @@ class Nova_CTA_Manager {
         $nonce = wp_create_nonce('nova_cta_editor');
         error_log('Nova CTAs: Created nonce for editor: ' . $nonce);
         
+        // Output nonce field and verify it's in the form
         wp_nonce_field('nova_cta_editor', 'nova_cta_editor_nonce');
+        error_log('Nova CTAs: Nonce field added to form with name: nova_cta_editor_nonce and value: ' . $nonce);
+        
         ?>
         <div class="nova-cta-editor">
             <div class="nova-tabs">
@@ -547,47 +550,54 @@ class Nova_CTA_Manager {
     }
 
     public function save_cta_data($post_id) {
+        error_log('Nova CTAs: ====== START save_cta_data ======');
         error_log('Nova CTAs: save_cta_data method called for post ID: ' . $post_id);
         error_log('Nova CTAs: POST data available: ' . (isset($_POST) ? 'yes' : 'no'));
         error_log('Nova CTAs: REQUEST_METHOD: ' . $_SERVER['REQUEST_METHOD']);
+        error_log('Nova CTAs: Current user can edit: ' . (current_user_can('edit_post', $post_id) ? 'yes' : 'no'));
+        error_log('Nova CTAs: Post type: ' . get_post_type($post_id));
         
         if (isset($_POST)) {
-            error_log('Nova CTAs: POST keys present: ' . implode(', ', array_keys($_POST)));
+            error_log('Nova CTAs: POST keys present: ' . print_r(array_keys($_POST), true));
         }
         
         // Check for nonce
         error_log('Nova CTAs: Nonce present: ' . (isset($_POST['nova_cta_editor_nonce']) ? 'yes' : 'no'));
         if (isset($_POST['nova_cta_editor_nonce'])) {
+            error_log('Nova CTAs: Nonce value: ' . $_POST['nova_cta_editor_nonce']);
             error_log('Nova CTAs: Nonce verification result: ' . (wp_verify_nonce($_POST['nova_cta_editor_nonce'], 'nova_cta_editor') ? 'valid' : 'invalid'));
         }
 
         // Early return if this is an autosave
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             error_log('Nova CTAs: Skipping save - autosave detected');
+            error_log('Nova CTAs: ====== END save_cta_data (autosave) ======');
             return;
         }
 
         // Early return if this is not our post type
         if (get_post_type($post_id) !== 'nova_cta') {
             error_log('Nova CTAs: Skipping save - not a CTA post type');
+            error_log('Nova CTAs: ====== END save_cta_data (wrong post type) ======');
             return;
         }
 
         // Check permissions first
         if (!current_user_can('edit_post', $post_id)) {
             error_log('Nova CTAs: Skipping save - user cannot edit post');
+            error_log('Nova CTAs: ====== END save_cta_data (no permission) ======');
             return;
         }
 
-        // Verify nonce - moved after permission check
+        // Verify nonce
         if (!isset($_POST['nova_cta_editor_nonce']) || 
             !wp_verify_nonce($_POST['nova_cta_editor_nonce'], 'nova_cta_editor')) {
             error_log('Nova CTAs: Skipping save - nonce verification failed');
+            error_log('Nova CTAs: ====== END save_cta_data (nonce failed) ======');
             return;
         }
 
-        error_log('Nova CTAs: Starting to save CTA data for post ID: ' . $post_id);
-        error_log('Nova CTAs: POST data received: ' . print_r($_POST, true));
+        error_log('Nova CTAs: All checks passed, proceeding with save');
 
         // Save content if it exists
         if (isset($_POST['content'])) {
@@ -674,7 +684,7 @@ class Nova_CTA_Manager {
             error_log('Nova CTAs: Verified saved display settings: ' . print_r($saved_display, true));
         }
 
-        error_log('Nova CTAs: Finished saving CTA data for post ID: ' . $post_id);
+        error_log('Nova CTAs: ====== END save_cta_data (completed) ======');
     }
 
     private function sanitize_design_settings($design) {

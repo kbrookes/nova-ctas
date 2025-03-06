@@ -158,16 +158,24 @@
         // Log when form is about to submit
         $('form#post').on('submit', function(e) {
             console.log('Nova CTAs: Form submission detected');
+            console.log('Nova CTAs: Form action:', $(this).attr('action'));
+            console.log('Nova CTAs: Form method:', $(this).attr('method'));
             
-            // Log form data
+            // Log all form fields
             var formData = new FormData(this);
+            console.log('Nova CTAs: All form fields:');
             for (var pair of formData.entries()) {
-                if (pair[0].includes('nova_cta_design')) {
-                    console.log('Nova CTAs: Form field - ' + pair[0] + ': ' + pair[1]);
-                }
+                console.log(pair[0] + ': ' + pair[1]);
             }
             
+            // Specifically log design settings
+            console.log('Nova CTAs: Design Settings:');
+            $('[name^="nova_cta_design"]').each(function() {
+                console.log($(this).attr('name') + ': ' + $(this).val());
+            });
+            
             // Log nonce
+            console.log('Nova CTAs: Nonce field:', $('#nova_cta_editor_nonce').val());
             console.log('Nova CTAs: Nonce present:', formData.has('nova_cta_editor_nonce'));
         });
     });
