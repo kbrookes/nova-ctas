@@ -1,12 +1,16 @@
 <?php
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 /**
  * Plugin Name: Nova CTAs
  * Plugin URI: https://github.com/kbrookes/nova-ctas
  * Description: A WordPress plugin for creating and managing Call To Action buttons
- * Version: 1.1.0
+ * Version: 1.1.1
  * Requires at least: 5.0
  * Requires PHP: 7.2
- * Author: Keith Brookes
+ * Author: Kelsey Brookes
  * Author URI: https://github.com/kbrookes
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
@@ -21,7 +25,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('NOVA_CTAS_VERSION', '1.1.0');
+define('NOVA_CTAS_VERSION', '1.1.1');
 define('NOVA_CTAS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('NOVA_CTAS_PLUGIN_URL', plugin_dir_url(__FILE__));
 

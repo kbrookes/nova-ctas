@@ -129,49 +129,47 @@
 /* Editor Container */
 .nova-cta-editor {
     margin: 20px 0;
-    max-width: 1200px;
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
 }
 
 /* Tabs Navigation */
 .nova-tabs {
     display: flex;
-    gap: 4px;
-    border-bottom: 1px solid #c3c4c7;
-    margin-bottom: 20px;
-    padding: 0 20px;
+    border-bottom: 1px solid #ccd0d4;
+    background: #f8f9f9;
+    padding: 0;
+    margin: 0;
 }
 
 .nova-tab-button {
     padding: 12px 20px;
-    border: 1px solid transparent;
-    border-bottom: none;
+    border: none;
     background: transparent;
-    color: #646970;
+    border-bottom: 3px solid transparent;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    margin-bottom: -1px;
+    color: #50575e;
+    margin: 0;
 }
 
 .nova-tab-button:hover {
     color: #2271b1;
-    border-color: #c3c4c7;
-    background: #f6f7f7;
+    background: #f0f0f1;
 }
 
 .nova-tab-button.active {
+    border-bottom-color: #2271b1;
+    color: #2271b1;
     background: #fff;
-    border-color: #c3c4c7;
-    border-bottom-color: #fff;
-    color: #1d2327;
 }
 
 /* Tab Content */
 .nova-tab-content {
     display: none;
     padding: 20px;
-    background: #fff;
-    border: 1px solid #c3c4c7;
 }
 
 .nova-tab-content.active {
@@ -190,66 +188,77 @@
 .nova-field-group label {
     display: block;
     margin-bottom: 8px;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .nova-field-group input[type="text"],
 .nova-field-group input[type="url"],
 .nova-field-group select {
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
 }
 
-/* Display Conditions */
-.nova-display-conditions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-top: 8px;
-}
-
-.nova-display-conditions label {
-    font-weight: normal;
-    margin: 0;
-}
-
-/* Color Picker */
-.wp-picker-container {
-    display: block;
-    margin-top: 8px;
-}
-
-/* Rich Text Editor */
-.wp-editor-wrap {
+.nova-field-group .wp-editor-wrap {
     margin-bottom: 20px;
 }
 
-/* Submit Button */
-.nova-cta-editor .submit {
-    margin-top: 20px;
-    padding: 20px;
-    background: #fff;
-    border: 1px solid #c3c4c7;
-    border-top: none;
+/* Color picker styles */
+.wp-picker-container {
+    margin-top: 5px;
 }
 
-/* Responsive Design */
+.wp-picker-container .wp-color-result.button {
+    margin: 0 6px 6px 0;
+}
+
+/* Media uploader button */
+.nova-media-upload {
+    margin-top: 5px !important;
+}
+
+.nova-media-preview {
+    max-width: 300px;
+    margin-top: 10px;
+}
+
+.nova-media-preview img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Display settings */
+.nova-display-settings {
+    max-width: 600px;
+}
+
+.nova-display-settings .nova-field-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.nova-display-settings .nova-field-group label {
+    flex: 0 0 200px;
+    margin-bottom: 0;
+}
+
+/* Responsive settings */
 @media screen and (max-width: 782px) {
     .nova-tabs {
-        padding: 0 10px;
+        flex-wrap: wrap;
     }
-
+    
     .nova-tab-button {
-        padding: 10px 15px;
+        flex: 1 1 auto;
+        text-align: center;
     }
-
-    .nova-tab-content {
-        padding: 15px;
+    
+    .nova-display-settings .nova-field-group {
+        flex-direction: column;
+        align-items: flex-start;
     }
-
-    .nova-field-group input[type="text"],
-    .nova-field-group input[type="url"],
-    .nova-field-group select {
-        max-width: 100%;
+    
+    .nova-display-settings .nova-field-group label {
+        margin-bottom: 8px;
     }
 } 

@@ -64,15 +64,16 @@
 
     // Tab Switching
     function initTabs() {
-        $('.nova-tab-button').on('click', function() {
-            const tab = $(this).data('tab');
-            const section = $(this).closest('.nova-settings-section');
+        $('.nova-tab-button').on('click', function(e) {
+            e.preventDefault();
+            var tab = $(this).data('tab');
             
-            section.find('.nova-tab-button').removeClass('active');
+            // Update active states
+            $('.nova-tab-button').removeClass('active');
             $(this).addClass('active');
             
-            section.find('.nova-tab-content').removeClass('active');
-            section.find(`.nova-tab-content[data-tab="${tab}"]`).addClass('active');
+            $('.nova-tab-content').removeClass('active');
+            $('.nova-tab-content[data-tab="' + tab + '"]').addClass('active');
         });
     }
 
@@ -98,14 +99,14 @@
         initAlignmentButtons();
 
         // Tab switching
-        $('.nova-tab-button').on('click', function() {
+        $('.nova-tab-button').on('click', function(e) {
+            e.preventDefault();
             var tab = $(this).data('tab');
             
             // Update active states
             $('.nova-tab-button').removeClass('active');
             $(this).addClass('active');
             
-            // Show selected tab content
             $('.nova-tab-content').removeClass('active');
             $('.nova-tab-content[data-tab="' + tab + '"]').addClass('active');
         });
@@ -113,6 +114,50 @@
         // Save form handling
         $('.nova-cta-editor form').on('submit', function(e) {
             // Make sure TinyMCE content is updated
+            if (typeof tinyMCE !== 'undefined') {
+                tinyMCE.triggerSave();
+            }
+        });
+
+        // Media uploader
+        var mediaUploader;
+        
+        $('.nova-media-upload').on('click', function(e) {
+            e.preventDefault();
+            
+            var button = $(this);
+            var previewContainer = button.siblings('.nova-media-preview');
+            var hiddenInput = button.siblings('input[type="hidden"]');
+            
+            if (mediaUploader) {
+                mediaUploader.open();
+                return;
+            }
+            
+            mediaUploader = wp.media({
+                title: 'Choose Image',
+                button: {
+                    text: 'Use this image'
+                },
+                multiple: false
+            });
+            
+            mediaUploader.on('select', function() {
+                var attachment = mediaUploader.state().get('selection').first().toJSON();
+                hiddenInput.val(attachment.id);
+                
+                if (attachment.type === 'image') {
+                    var img = $('<img>').attr('src', attachment.url);
+                    previewContainer.html(img);
+                }
+            });
+            
+            mediaUploader.open();
+        });
+
+        // Form submission
+        $('#post').on('submit', function() {
+            // Ensure TinyMCE content is saved
             if (typeof tinyMCE !== 'undefined') {
                 tinyMCE.triggerSave();
             }

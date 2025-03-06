@@ -11,9 +11,9 @@ class Nova_CTA_Manager {
         }
 
         add_action('init', array($this, 'register_cta_post_type'), 0);
-        add_action('admin_menu', array($this, 'add_cta_admin_page'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_styles'));
+        add_action('edit_form_after_title', array($this, 'render_cta_admin_page'));
         add_action('save_post_nova_cta', array($this, 'save_cta_data'));
         
         // Register shortcodes
@@ -29,6 +29,11 @@ class Nova_CTA_Manager {
 
         // Add content filter for automatic CTA insertion
         add_filter('the_content', array($this, 'maybe_insert_cta'));
+
+        // Remove default editor
+        add_action('admin_init', function() {
+            remove_post_type_support('nova_cta', 'editor');
+        });
     }
 
     public function register_shortcodes() {
@@ -81,22 +86,10 @@ class Nova_CTA_Manager {
         register_post_type('nova_cta', $args);
     }
 
-    public function add_cta_admin_page() {
-        add_submenu_page(
-            'edit.php?post_type=nova_cta',
-            __('Edit CTA', 'nova-ctas'),
-            __('Edit CTA', 'nova-ctas'),
-            'edit_posts',
-            'edit-nova-cta',
-            array($this, 'render_cta_admin_page')
-        );
-    }
-
     public function enqueue_admin_scripts($hook) {
-        if ($hook === 'nova_cta_page_edit-nova-cta' || 
-            ($hook === 'post.php' && get_post_type() === 'nova_cta') ||
-            ($hook === 'post-new.php' && get_post_type() === 'nova_cta')) {
-            
+        global $post;
+        
+        if (($hook === 'post.php' || $hook === 'post-new.php') && get_post_type() === 'nova_cta') {
             wp_enqueue_style('wp-color-picker');
             wp_enqueue_script('wp-color-picker');
             wp_enqueue_media();
@@ -119,84 +112,68 @@ class Nova_CTA_Manager {
         }
     }
 
-    public function render_cta_admin_page() {
-        $post_id = isset($_GET['post']) ? intval($_GET['post']) : 0;
-        $post = get_post($post_id);
+    public function render_cta_admin_page($post) {
+        if ($post->post_type !== 'nova_cta') {
+            return;
+        }
         
-        $settings = get_post_meta($post_id, '_nova_cta_settings', true);
-        $design = get_post_meta($post_id, '_nova_cta_design', true);
-        $display = get_post_meta($post_id, '_nova_cta_display', true);
+        $settings = get_post_meta($post->ID, '_nova_cta_settings', true);
+        $design = get_post_meta($post->ID, '_nova_cta_design', true);
+        $display = get_post_meta($post->ID, '_nova_cta_display', true);
         
         // Default values
-        $heading = $post ? $post->post_title : '';
-        $content = $post ? $post->post_content : '';
+        $content = $post->post_content;
         $button_text = isset($settings['button_text']) ? $settings['button_text'] : '';
         $button_url = isset($settings['button_url']) ? $settings['button_url'] : '';
         $button_target = isset($settings['button_target']) ? $settings['button_target'] : '_self';
         
         ?>
-        <div class="wrap nova-cta-editor">
-            <h1><?php echo $post_id ? __('Edit CTA', 'nova-ctas') : __('Add New CTA', 'nova-ctas'); ?></h1>
-            
-            <form method="post" action="">
-                <?php wp_nonce_field('nova_cta_editor', 'nova_cta_editor_nonce'); ?>
-                <input type="hidden" name="post_id" value="<?php echo $post_id; ?>">
-                
-                <div class="nova-tabs">
-                    <button type="button" class="nova-tab-button active" data-tab="content"><?php _e('Content', 'nova-ctas'); ?></button>
-                    <button type="button" class="nova-tab-button" data-tab="design"><?php _e('Design', 'nova-ctas'); ?></button>
-                    <button type="button" class="nova-tab-button" data-tab="display"><?php _e('Display', 'nova-ctas'); ?></button>
+        <div class="nova-cta-editor">
+            <div class="nova-tabs">
+                <button type="button" class="nova-tab-button active" data-tab="content"><?php _e('Content', 'nova-ctas'); ?></button>
+                <button type="button" class="nova-tab-button" data-tab="design"><?php _e('Design', 'nova-ctas'); ?></button>
+                <button type="button" class="nova-tab-button" data-tab="display"><?php _e('Display', 'nova-ctas'); ?></button>
+            </div>
+
+            <div class="nova-tab-content active" data-tab="content">
+                <div class="nova-field-group">
+                    <label for="nova_cta_content"><?php _e('Content:', 'nova-ctas'); ?></label>
+                    <?php 
+                    wp_editor($content, 'content', array(
+                        'textarea_name' => 'content',
+                        'media_buttons' => true,
+                        'textarea_rows' => 10,
+                        'teeny' => false
+                    ));
+                    ?>
                 </div>
 
-                <div class="nova-tab-content active" data-tab="content">
-                    <div class="nova-field-group">
-                        <label for="nova_cta_heading"><?php _e('Heading:', 'nova-ctas'); ?></label>
-                        <input type="text" id="nova_cta_heading" name="post_title" value="<?php echo esc_attr($heading); ?>" class="widefat">
-                    </div>
-                    
-                    <div class="nova-field-group">
-                        <label for="nova_cta_content"><?php _e('Content:', 'nova-ctas'); ?></label>
-                        <?php 
-                        wp_editor($content, 'nova_cta_content', array(
-                            'textarea_name' => 'post_content',
-                            'media_buttons' => true,
-                            'textarea_rows' => 10,
-                            'teeny' => false
-                        ));
-                        ?>
-                    </div>
-
-                    <div class="nova-field-group">
-                        <label for="nova_cta_button_text"><?php _e('Button Text:', 'nova-ctas'); ?></label>
-                        <input type="text" id="nova_cta_button_text" name="nova_cta_settings[button_text]" value="<?php echo esc_attr($button_text); ?>" class="widefat">
-                    </div>
-
-                    <div class="nova-field-group">
-                        <label for="nova_cta_button_url"><?php _e('Button URL:', 'nova-ctas'); ?></label>
-                        <input type="url" id="nova_cta_button_url" name="nova_cta_settings[button_url]" value="<?php echo esc_url($button_url); ?>" class="widefat">
-                    </div>
-
-                    <div class="nova-field-group">
-                        <label for="nova_cta_button_target"><?php _e('Open in:', 'nova-ctas'); ?></label>
-                        <select id="nova_cta_button_target" name="nova_cta_settings[button_target]">
-                            <option value="_self" <?php selected($button_target, '_self'); ?>><?php _e('Same Window', 'nova-ctas'); ?></option>
-                            <option value="_blank" <?php selected($button_target, '_blank'); ?>><?php _e('New Window', 'nova-ctas'); ?></option>
-                        </select>
-                    </div>
+                <div class="nova-field-group">
+                    <label for="nova_cta_button_text"><?php _e('Button Text:', 'nova-ctas'); ?></label>
+                    <input type="text" id="nova_cta_button_text" name="nova_cta_settings[button_text]" value="<?php echo esc_attr($button_text); ?>" class="widefat">
                 </div>
 
-                <div class="nova-tab-content" data-tab="design">
-                    <?php $this->render_design_tab($design); ?>
+                <div class="nova-field-group">
+                    <label for="nova_cta_button_url"><?php _e('Button URL:', 'nova-ctas'); ?></label>
+                    <input type="url" id="nova_cta_button_url" name="nova_cta_settings[button_url]" value="<?php echo esc_url($button_url); ?>" class="widefat">
                 </div>
 
-                <div class="nova-tab-content" data-tab="display">
-                    <?php $this->render_display_tab($display); ?>
+                <div class="nova-field-group">
+                    <label for="nova_cta_button_target"><?php _e('Open in:', 'nova-ctas'); ?></label>
+                    <select id="nova_cta_button_target" name="nova_cta_settings[button_target]">
+                        <option value="_self" <?php selected($button_target, '_self'); ?>><?php _e('Same Window', 'nova-ctas'); ?></option>
+                        <option value="_blank" <?php selected($button_target, '_blank'); ?>><?php _e('New Window', 'nova-ctas'); ?></option>
+                    </select>
                 </div>
+            </div>
 
-                <p class="submit">
-                    <input type="submit" name="submit" id="submit" class="button button-primary" value="<?php _e('Save CTA', 'nova-ctas'); ?>">
-                </p>
-            </form>
+            <div class="nova-tab-content" data-tab="design">
+                <?php $this->render_design_tab($design); ?>
+            </div>
+
+            <div class="nova-tab-content" data-tab="display">
+                <?php $this->render_display_tab($display); ?>
+            </div>
         </div>
         <?php
     }
