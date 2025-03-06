@@ -812,30 +812,8 @@ class Nova_CTA_Manager {
         $selected_cats = isset($settings['display_categories']) ? $settings['display_categories'] : array();
         ?>
         <div class="nova-relationship-settings">
-            <p><strong><?php _e('Pillar Page', 'nova-ctas'); ?></strong></p>
-            <div class="nova-pillar-page">
-                <?php
-                // Get all pillar pages
-                $pages = get_pages(array(
-                    'post_status' => 'publish',
-                    'meta_key' => '_is_pillar_page',
-                    'meta_value' => '1'
-                ));
-                ?>
-                <select name="nova_cta_settings[pillar_page]" id="nova_cta_pillar_page">
-                    <option value=""><?php _e('Select a Pillar Page', 'nova-ctas'); ?></option>
-                    <?php foreach ($pages as $page) : ?>
-                        <option value="<?php echo esc_attr($page->ID); ?>" 
-                                <?php selected(isset($settings['pillar_page']) ? $settings['pillar_page'] : '', $page->ID); ?>
-                                data-url="<?php echo esc_url(get_permalink($page->ID)); ?>">
-                            <?php echo esc_html($page->post_title); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <p><strong><?php _e('Associated Categories', 'nova-ctas'); ?></strong></p>
-            <p class="description"><?php _e('Select categories that are relevant to this pillar page. The CTA will automatically appear in posts from these categories.', 'nova-ctas'); ?></p>
+            <p><strong><?php _e('Display in Categories', 'nova-ctas'); ?></strong></p>
+            <p class="description"><?php _e('Select which post categories this CTA should appear in.', 'nova-ctas'); ?></p>
             
             <div class="nova-categories">
                 <?php
@@ -853,6 +831,34 @@ class Nova_CTA_Manager {
                     <?php
                 }
                 ?>
+            </div>
+
+            <p><strong><?php _e('Link to Pillar Page', 'nova-ctas'); ?></strong></p>
+            <p class="description"><?php _e('Select which pillar page this CTA should link to.', 'nova-ctas'); ?></p>
+            
+            <div class="nova-pillar-page">
+                <?php
+                // Get all pages (not just pillar pages)
+                $pages = get_pages(array(
+                    'post_status' => 'publish'
+                ));
+                ?>
+                <select name="nova_cta_settings[pillar_page]" id="nova_cta_pillar_page">
+                    <option value=""><?php _e('Select a Page', 'nova-ctas'); ?></option>
+                    <?php foreach ($pages as $page) : ?>
+                        <option value="<?php echo esc_attr($page->ID); ?>" 
+                                <?php selected(isset($settings['pillar_page']) ? $settings['pillar_page'] : '', $page->ID); ?>
+                                data-url="<?php echo esc_url(get_permalink($page->ID)); ?>">
+                            <?php echo esc_html($page->post_title); ?>
+                            <?php 
+                            // Show "(Pillar Page)" next to pages marked as pillar pages
+                            if (get_post_meta($page->ID, '_is_pillar_page', true)) {
+                                echo ' ' . esc_html__('(Pillar Page)', 'nova-ctas');
+                            }
+                            ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
         </div>
 
