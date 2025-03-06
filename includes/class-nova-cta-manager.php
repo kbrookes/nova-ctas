@@ -15,6 +15,7 @@ class Nova_CTA_Manager {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_styles'));
         add_action('edit_form_after_title', array($this, 'render_cta_admin_page'));
         add_action('save_post_nova_cta', array($this, 'save_cta_data'));
+        add_action('add_meta_boxes', array($this, 'add_cta_meta_boxes'));
         
         // Register shortcodes
         $this->register_shortcodes();
@@ -763,23 +764,108 @@ class Nova_CTA_Manager {
                 ));
             }
         } else {
-            // Get CTAs based on display conditions
-            $args = array(
-                'post_type' => 'nova_cta',
-                'posts_per_page' => -1,
-                'orderby' => 'menu_order',
-                'order' => 'ASC',
-                'meta_query' => array(
-                    array(
-                        'key' => '_nova_cta_display',
-                        'value' => $post_type,
-                        'compare' => 'LIKE'
+            // Get post categories
+            $categories = wp_get_post_categories($post_id);
+            
+            if (!empty($categories)) {
+                // Get CTAs that target these categories
+                $args = array(
+                    'post_type' => 'nova_cta',
+                    'posts_per_page' => -1,
+                    'orderby' => 'menu_order',
+                    'order' => 'ASC',
+                    'meta_query' => array(
+                        'relation' => 'OR'
                     )
-                )
-            );
-            $ctas = get_posts($args);
+                );
+
+                // Add each category to the meta query
+                foreach ($categories as $cat_id) {
+                    $args['meta_query'][] = array(
+                        'key' => '_nova_cta_settings',
+                        'value' => sprintf('"display_categories":[%d]', $cat_id),
+                        'compare' => 'LIKE'
+                    );
+                }
+
+                $ctas = get_posts($args);
+            }
         }
 
         return $ctas;
+    }
+
+    public function add_cta_meta_boxes() {
+        // Display rules (side)
+        add_meta_box(
+            'nova_cta_relationships',
+            __('CTA Display Rules', 'nova-ctas'),
+            array($this, 'render_relationship_settings'),
+            'nova_cta',
+            'side',
+            'default'
+        );
+    }
+
+    public function render_relationship_settings($post) {
+        $settings = get_post_meta($post->ID, '_nova_cta_settings', true);
+        $selected_cats = isset($settings['display_categories']) ? $settings['display_categories'] : array();
+        ?>
+        <div class="nova-relationship-settings">
+            <p><strong><?php _e('Pillar Page', 'nova-ctas'); ?></strong></p>
+            <div class="nova-pillar-page">
+                <?php
+                // Get all pillar pages
+                $pages = get_pages(array(
+                    'post_status' => 'publish',
+                    'meta_key' => '_is_pillar_page',
+                    'meta_value' => '1'
+                ));
+                ?>
+                <select name="nova_cta_settings[pillar_page]" id="nova_cta_pillar_page">
+                    <option value=""><?php _e('Select a Pillar Page', 'nova-ctas'); ?></option>
+                    <?php foreach ($pages as $page) : ?>
+                        <option value="<?php echo esc_attr($page->ID); ?>" 
+                                <?php selected(isset($settings['pillar_page']) ? $settings['pillar_page'] : '', $page->ID); ?>
+                                data-url="<?php echo esc_url(get_permalink($page->ID)); ?>">
+                            <?php echo esc_html($page->post_title); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <p><strong><?php _e('Associated Categories', 'nova-ctas'); ?></strong></p>
+            <p class="description"><?php _e('Select categories that are relevant to this pillar page. The CTA will automatically appear in posts from these categories.', 'nova-ctas'); ?></p>
+            
+            <div class="nova-categories">
+                <?php
+                $categories = get_categories(array('hide_empty' => false));
+                foreach ($categories as $category) {
+                    ?>
+                    <p>
+                        <label>
+                            <input type="checkbox" name="nova_cta_settings[display_categories][]" 
+                                   value="<?php echo esc_attr($category->term_id); ?>"
+                                   <?php checked(in_array($category->term_id, $selected_cats)); ?>>
+                            <?php echo esc_html($category->name); ?>
+                        </label>
+                    </p>
+                    <?php
+                }
+                ?>
+            </div>
+        </div>
+
+        <script>
+        jQuery(document).ready(function($) {
+            // Auto-fill button URL when pillar page is selected
+            $('#nova_cta_pillar_page').on('change', function() {
+                var selectedOption = $(this).find('option:selected');
+                var url = selectedOption.data('url');
+                $('input[name="nova_cta_settings[button_url]"]').val(url);
+            });
+        });
+        </script>
+        <?php
     }
 } 

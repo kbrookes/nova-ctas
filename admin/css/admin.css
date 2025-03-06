@@ -134,6 +134,50 @@
     box-shadow: 0 1px 1px rgba(0,0,0,.04);
 }
 
+/* Relationship Settings */
+.nova-relationship-settings {
+    margin: -6px -12px -12px -12px;
+    padding: 12px;
+}
+
+.nova-relationship-settings p {
+    margin: 0 0 8px;
+}
+
+.nova-relationship-settings p.description {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.nova-pillar-page select {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.nova-categories {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 8px;
+    background: #fff;
+    margin-top: 8px;
+}
+
+.nova-categories p {
+    margin: 0;
+    padding: 4px 0;
+}
+
+.nova-categories label {
+    display: block;
+    margin: 0;
+}
+
+.nova-categories input[type="checkbox"] {
+    margin-right: 8px;
+}
+
 /* Tabs Navigation */
 .nova-tabs {
     display: flex;
