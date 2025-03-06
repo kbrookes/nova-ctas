@@ -127,9 +127,10 @@ class Nova_CTA_Manager {
         $button_text = isset($settings['button_text']) ? $settings['button_text'] : '';
         $button_url = isset($settings['button_url']) ? $settings['button_url'] : '';
         $button_target = isset($settings['button_target']) ? $settings['button_target'] : '_self';
-        $display_categories = isset($settings['display_categories']) ? $settings['display_categories'] : array();
+        $display_categories = isset($settings['display_categories']) ? (array)$settings['display_categories'] : array();
         $pillar_page = isset($settings['pillar_page']) ? $settings['pillar_page'] : '';
         
+        wp_nonce_field('nova_cta_editor', 'nova_cta_editor_nonce');
         ?>
         <div class="nova-cta-editor">
             <div class="nova-tabs">
@@ -180,10 +181,52 @@ class Nova_CTA_Manager {
             </div>
 
             <div class="nova-tab-content" data-tab="relationships">
-                <?php $this->render_relationship_settings($post); ?>
-            </div>
+                <div class="nova-field-group">
+                    <h3><?php _e('Display in Categories', 'nova-ctas'); ?></h3>
+                    <p class="description"><?php _e('Select which post categories this CTA should appear in:', 'nova-ctas'); ?></p>
+                    <?php
+                    $categories = get_categories(array('hide_empty' => false));
+                    if ($categories) {
+                        echo '<div class="nova-categories-list">';
+                        foreach ($categories as $category) {
+                            printf(
+                                '<label><input type="checkbox" name="nova_cta_settings[display_categories][]" value="%d" %s> %s</label>',
+                                $category->term_id,
+                                checked(in_array($category->term_id, $display_categories), true, false),
+                                esc_html($category->name)
+                            );
+                        }
+                        echo '</div>';
+                    }
+                    ?>
+                </div>
 
-            <?php wp_nonce_field('nova_cta_editor', 'nova_cta_editor_nonce'); ?>
+                <div class="nova-field-group">
+                    <h3><?php _e('Link to Page', 'nova-ctas'); ?></h3>
+                    <p class="description"><?php _e('Select which page this CTA should link to:', 'nova-ctas'); ?></p>
+                    <?php
+                    $pages = get_pages(array('sort_column' => 'menu_order,post_title'));
+                    if ($pages) {
+                        echo '<select name="nova_cta_settings[pillar_page]" class="widefat">';
+                        echo '<option value="">' . __('Select a page...', 'nova-ctas') . '</option>';
+                        foreach ($pages as $page) {
+                            $is_pillar = get_post_meta($page->ID, '_is_pillar_page', true);
+                            $title = $page->post_title;
+                            if ($is_pillar) {
+                                $title .= ' ' . __('(Pillar Page)', 'nova-ctas');
+                            }
+                            printf(
+                                '<option value="%d" %s>%s</option>',
+                                $page->ID,
+                                selected($pillar_page, $page->ID, false),
+                                esc_html($title)
+                            );
+                        }
+                        echo '</select>';
+                    }
+                    ?>
+                </div>
+            </div>
         </div>
         <?php
     }
@@ -812,56 +855,7 @@ class Nova_CTA_Manager {
     }
 
     public function render_relationship_settings($post) {
-        wp_nonce_field('nova_cta_editor', 'nova_cta_editor_nonce');
-        $settings = get_post_meta($post->ID, '_nova_cta_settings', true);
-        $display_categories = isset($settings['display_categories']) ? (array)$settings['display_categories'] : array();
-        $pillar_page = isset($settings['pillar_page']) ? $settings['pillar_page'] : '';
-        ?>
-        <div class="nova-field-group">
-            <h3><?php _e('Display in Categories', 'nova-ctas'); ?></h3>
-            <p class="description"><?php _e('Select which post categories this CTA should appear in:', 'nova-ctas'); ?></p>
-            <?php
-            $categories = get_categories(array('hide_empty' => false));
-            if ($categories) {
-                echo '<div class="nova-categories-list">';
-                foreach ($categories as $category) {
-                    printf(
-                        '<label><input type="checkbox" name="nova_cta_settings[display_categories][]" value="%d" %s> %s</label>',
-                        $category->term_id,
-                        checked(in_array($category->term_id, $display_categories), true, false),
-                        esc_html($category->name)
-                    );
-                }
-                echo '</div>';
-            }
-            ?>
-        </div>
-
-        <div class="nova-field-group">
-            <h3><?php _e('Link to Page', 'nova-ctas'); ?></h3>
-            <p class="description"><?php _e('Select which page this CTA should link to:', 'nova-ctas'); ?></p>
-            <?php
-            $pages = get_pages(array('sort_column' => 'menu_order,post_title'));
-            if ($pages) {
-                echo '<select name="nova_cta_settings[pillar_page]" class="widefat">';
-                echo '<option value="">' . __('Select a page...', 'nova-ctas') . '</option>';
-                foreach ($pages as $page) {
-                    $is_pillar = get_post_meta($page->ID, '_is_pillar_page', true);
-                    $title = $page->post_title;
-                    if ($is_pillar) {
-                        $title .= ' ' . __('(Pillar Page)', 'nova-ctas');
-                    }
-                    printf(
-                        '<option value="%d" %s>%s</option>',
-                        $page->ID,
-                        selected($pillar_page, $page->ID, false),
-                        esc_html($title)
-                    );
-                }
-                echo '</select>';
-            }
-            ?>
-        </div>
-        <?php
+        // This function is no longer needed as we've moved the settings into the main editor
+        return;
     }
 } 
