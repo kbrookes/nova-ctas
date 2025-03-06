@@ -836,4 +836,3 @@ class Nova_CTA_Manager {
         <?php
     }
 } 
-} 
