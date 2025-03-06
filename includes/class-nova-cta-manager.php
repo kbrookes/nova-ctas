@@ -132,7 +132,6 @@ class Nova_CTA_Manager {
         // Default values
         $content = $post->post_content;
         $button_text = isset($settings['button_text']) ? $settings['button_text'] : '';
-        $button_url = isset($settings['button_url']) ? $settings['button_url'] : '';
         $button_target = isset($settings['button_target']) ? $settings['button_target'] : '_self';
         $display_categories = isset($settings['display_categories']) ? (array)$settings['display_categories'] : array();
         $pillar_page = isset($settings['pillar_page']) ? $settings['pillar_page'] : '';
@@ -163,11 +162,6 @@ class Nova_CTA_Manager {
                 <div class="nova-field-group">
                     <label for="nova_cta_button_text"><?php _e('Button Text:', 'nova-ctas'); ?></label>
                     <input type="text" id="nova_cta_button_text" name="nova_cta_settings[button_text]" value="<?php echo esc_attr($button_text); ?>" class="widefat">
-                </div>
-
-                <div class="nova-field-group">
-                    <label for="nova_cta_button_url"><?php _e('Button URL:', 'nova-ctas'); ?></label>
-                    <input type="url" id="nova_cta_button_url" name="nova_cta_settings[button_url]" value="<?php echo esc_url($button_url); ?>" class="widefat">
                 </div>
 
                 <div class="nova-field-group">
@@ -247,38 +241,75 @@ class Nova_CTA_Manager {
             'bottom' => isset($design['padding_bottom']) ? $design['padding_bottom'] : '30',
             'left' => isset($design['padding_left']) ? $design['padding_left'] : '30'
         );
-        $margin = array(
-            'top' => isset($design['margin_top']) ? $design['margin_top'] : '60',
-            'right' => isset($design['margin_right']) ? $design['margin_right'] : '0',
-            'bottom' => isset($design['margin_bottom']) ? $design['margin_bottom'] : '60',
-            'left' => isset($design['margin_left']) ? $design['margin_left'] : '0'
-        );
-        $shadow = array(
-            'x' => isset($design['shadow_x']) ? $design['shadow_x'] : '0',
-            'y' => isset($design['shadow_y']) ? $design['shadow_y'] : '0',
-            'blur' => isset($design['shadow_blur']) ? $design['shadow_blur'] : '0',
-            'spread' => isset($design['shadow_spread']) ? $design['shadow_spread'] : '0',
-            'color' => isset($design['shadow_color']) ? $design['shadow_color'] : 'rgba(0,0,0,0)'
-        );
-
-        // Background Settings
-        $bg_color = isset($design['bg_color']) ? $design['bg_color'] : '#f8f9fa';
-        $bg_image = isset($design['bg_image']) ? $design['bg_image'] : '';
-        $bg_position = isset($design['bg_position']) ? $design['bg_position'] : 'center center';
-        $bg_size = isset($design['bg_size']) ? $design['bg_size'] : 'cover';
-        $overlay_color = isset($design['overlay_color']) ? $design['overlay_color'] : '';
-        $overlay_opacity = isset($design['overlay_opacity']) ? $design['overlay_opacity'] : '50';
         
-        // Typography settings
-        $title_color = isset($design['title_color']) ? $design['title_color'] : '';
-        $title_font_size = isset($design['title_font_size']) ? $design['title_font_size'] : '2rem';
-        $title_font_weight = isset($design['title_font_weight']) ? $design['title_font_weight'] : '700';
-        $body_color = isset($design['body_color']) ? $design['body_color'] : '';
-        $body_font_size = isset($design['body_font_size']) ? $design['body_font_size'] : '1rem';
-        $body_font_weight = isset($design['body_font_weight']) ? $design['body_font_weight'] : '400';
+        // Layout Settings
+        $inline_image = isset($design['inline_image']) ? $design['inline_image'] : '';
+        $image_position = isset($design['image_position']) ? $design['image_position'] : 'right';
+        $content_width = isset($design['content_width']) ? $design['content_width'] : '50';
+        $content_alignment = isset($design['content_alignment']) ? $design['content_alignment'] : 'left';
+        $element_gap = isset($design['element_gap']) ? $design['element_gap'] : '20';
+        
+        // Start Design Tab Content
         ?>
+        <div class="nova-design-section">
+            <h3><?php _e('Layout', 'nova-ctas'); ?></h3>
+            
+            <div class="nova-field-group">
+                <label><?php _e('Inline Image:', 'nova-ctas'); ?></label>
+                <div class="nova-media-wrapper">
+                    <input type="hidden" name="nova_cta_design[inline_image]" value="<?php echo esc_attr($inline_image); ?>">
+                    <button type="button" class="button nova-media-upload"><?php _e('Choose Image', 'nova-ctas'); ?></button>
+                    <button type="button" class="button nova-remove-image" <?php echo empty($inline_image) ? 'style="display:none;"' : ''; ?>>
+                        <?php _e('Remove Image', 'nova-ctas'); ?>
+                    </button>
+                    <div class="nova-media-preview">
+                        <?php if ($inline_image): ?>
+                            <?php echo wp_get_attachment_image($inline_image, 'medium'); ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Box Design Section -->
+            <div class="nova-field-group">
+                <label><?php _e('Image Position:', 'nova-ctas'); ?></label>
+                <select name="nova_cta_design[image_position]">
+                    <option value="right" <?php selected($image_position, 'right'); ?>><?php _e('Right', 'nova-ctas'); ?></option>
+                    <option value="left" <?php selected($image_position, 'left'); ?>><?php _e('Left', 'nova-ctas'); ?></option>
+                </select>
+            </div>
+
+            <div class="nova-field-group">
+                <label><?php _e('Content Width (%):', 'nova-ctas'); ?></label>
+                <input type="range" name="nova_cta_design[content_width]" value="<?php echo esc_attr($content_width); ?>" min="30" max="70" step="5">
+                <span class="range-value"><?php echo esc_html($content_width); ?>%</span>
+            </div>
+
+            <div class="nova-field-group">
+                <label><?php _e('Content Alignment:', 'nova-ctas'); ?></label>
+                <div class="nova-alignment-controls">
+                    <label class="nova-alignment-option">
+                        <input type="radio" name="nova_cta_design[content_alignment]" value="left" <?php checked($content_alignment, 'left'); ?>>
+                        <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-left.svg" alt="<?php _e('Left', 'nova-ctas'); ?>">
+                    </label>
+                    <label class="nova-alignment-option">
+                        <input type="radio" name="nova_cta_design[content_alignment]" value="center" <?php checked($content_alignment, 'center'); ?>>
+                        <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-center.svg" alt="<?php _e('Center', 'nova-ctas'); ?>">
+                    </label>
+                    <label class="nova-alignment-option">
+                        <input type="radio" name="nova_cta_design[content_alignment]" value="right" <?php checked($content_alignment, 'right'); ?>>
+                        <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-right.svg" alt="<?php _e('Right', 'nova-ctas'); ?>">
+                    </label>
+                </div>
+            </div>
+
+            <div class="nova-field-group">
+                <label><?php _e('Element Gap (px):', 'nova-ctas'); ?></label>
+                <input type="range" name="nova_cta_design[element_gap]" value="<?php echo esc_attr($element_gap); ?>" min="10" max="60" step="5">
+                <span class="range-value"><?php echo esc_html($element_gap); ?>px</span>
+            </div>
+        </div>
+
+        <!-- Original Box Design Section -->
         <div class="nova-design-section">
             <h3><?php _e('Box Design', 'nova-ctas'); ?></h3>
             
@@ -550,7 +581,6 @@ class Nova_CTA_Manager {
             
             $sanitized_settings = array(
                 'button_text' => isset($settings['button_text']) ? sanitize_text_field($settings['button_text']) : '',
-                'button_url' => isset($settings['button_url']) ? esc_url_raw($settings['button_url']) : '',
                 'button_target' => isset($settings['button_target']) ? sanitize_text_field($settings['button_target']) : '_self',
                 'display_categories' => array_map('absint', (array)$settings['display_categories']),
                 'pillar_page' => isset($settings['pillar_page']) ? absint($settings['pillar_page']) : ''
@@ -604,7 +634,7 @@ class Nova_CTA_Manager {
         $sanitized['shadow_y'] = isset($design['shadow_y']) ? absint($design['shadow_y']) : 0;
         $sanitized['shadow_blur'] = isset($design['shadow_blur']) ? absint($design['shadow_blur']) : 0;
         $sanitized['shadow_spread'] = isset($design['shadow_spread']) ? absint($design['shadow_spread']) : 0;
-        $sanitized['shadow_color'] = isset($design['shadow_color']) ? sanitize_text_field($design['shadow_color']) : 'rgba(0,0,0,0)';
+        $sanitized['shadow_color'] = isset($design['shadow_color']) ? sanitize_text_field($design['shadow_color']) : 'rgba(0,0,0,0.1)';
         
         // Background Settings
         $sanitized['bg_color'] = isset($design['bg_color']) ? sanitize_text_field($design['bg_color']) : '#f8f9fa';
@@ -726,29 +756,35 @@ class Nova_CTA_Manager {
             
             // Get button settings with defaults
             $button_text = isset($settings['button_text']) ? $settings['button_text'] : '';
-            $button_url = '';
             
-            // Handle button URL with pillar page fallback
+            // Always get URL from pillar page
+            $button_url = '';
             if (!empty($settings['pillar_page'])) {
                 $button_url = get_permalink($settings['pillar_page']);
                 error_log('Nova CTAs: Using pillar page URL: ' . $button_url);
-            } elseif (!empty($settings['button_url'])) {
-                $button_url = $settings['button_url'];
-                error_log('Nova CTAs: Using custom button URL: ' . $button_url);
             }
             
             if (empty($button_url)) {
                 $button_url = '#';
-                error_log('Nova CTAs: No URL found, using fallback: #');
+                error_log('Nova CTAs: No pillar page set, using fallback: #');
             }
             
             $button_target = isset($settings['button_target']) ? $settings['button_target'] : '_self';
             
+            // Layout settings
+            $inline_image = isset($design['inline_image']) ? $design['inline_image'] : '';
+            $image_position = isset($design['image_position']) ? $design['image_position'] : 'right';
+            $content_width = isset($design['content_width']) ? absint($design['content_width']) : 50;
+            $content_alignment = isset($design['content_alignment']) ? $design['content_alignment'] : 'left';
+            $element_gap = isset($design['element_gap']) ? absint($design['element_gap']) : 20;
+            
             // Build CSS classes
             $classes = array(
                 'nova-cta',
-                'nova-cta-' . sanitize_html_class($design['layout'] ?? 'standard'),
-                'nova-cta-button-' . sanitize_html_class($design['button_style'] ?? 'default')
+                'nova-cta-' . $cta->ID,
+                'nova-cta-layout-' . ($inline_image ? 'with-image' : 'text-only'),
+                'nova-cta-image-' . $image_position,
+                'nova-cta-align-' . $content_alignment
             );
 
             // Build inline styles array
@@ -770,9 +806,8 @@ class Nova_CTA_Manager {
             }
 
             // Box design with validation
-            $border_radius = isset($design['border_radius']) ? absint($design['border_radius']) : 0;
-            if ($border_radius > 0) {
-                $styles[] = 'border-radius: ' . $border_radius . 'px';
+            if (!empty($design['border_radius'])) {
+                $styles[] = 'border-radius: ' . absint($design['border_radius']) . 'px';
             }
             
             // Padding with validation
@@ -789,27 +824,32 @@ class Nova_CTA_Manager {
                 $padding['left']
             );
 
-            // Margin with validation
-            $margin = array(
-                'top' => isset($design['margin_top']) ? absint($design['margin_top']) : 60,
-                'right' => isset($design['margin_right']) ? absint($design['margin_right']) : 0,
-                'bottom' => isset($design['margin_bottom']) ? absint($design['margin_bottom']) : 60,
-                'left' => isset($design['margin_left']) ? absint($design['margin_left']) : 0
-            );
-            $styles[] = sprintf('margin: %dpx %dpx %dpx %dpx', 
-                $margin['top'], 
-                $margin['right'], 
-                $margin['bottom'], 
-                $margin['left']
-            );
-
             // Build HTML with proper escaping
             $html = sprintf(
                 '<div class="%s" style="%s">',
                 esc_attr(implode(' ', array_filter($classes))),
                 esc_attr(implode('; ', array_filter($styles)))
             );
+
+            // Start flex container for image and content
+            $html .= '<div class="nova-cta-container">';
             
+            // Content wrapper with width and alignment
+            $content_styles = array(
+                'width: ' . $content_width . '%',
+                'text-align: ' . $content_alignment,
+                '--element-gap: ' . $element_gap . 'px'
+            );
+            
+            if (!empty($design['body_color'])) {
+                $content_styles[] = 'color: ' . esc_attr($design['body_color']);
+            }
+            
+            $html .= sprintf(
+                '<div class="nova-cta-content" style="%s">',
+                esc_attr(implode('; ', $content_styles))
+            );
+
             // Add title with typography settings
             $title_styles = array();
             if (!empty($design['title_color'])) {
@@ -828,27 +868,9 @@ class Nova_CTA_Manager {
                 esc_html($cta->post_title)
             );
             
-            // Content wrapper with typography settings
-            $content_styles = array();
-            if (!empty($design['body_color'])) {
-                $content_styles[] = 'color: ' . esc_attr($design['body_color']);
-            }
-            if (!empty($design['body_font_size'])) {
-                $content_styles[] = 'font-size: ' . esc_attr($design['body_font_size']);
-            }
-            if (!empty($design['body_font_weight'])) {
-                $content_styles[] = 'font-weight: ' . esc_attr($design['body_font_weight']);
-            }
-
-            $html .= sprintf(
-                '<div class="nova-cta-content" style="%s">',
-                esc_attr(implode('; ', array_filter($content_styles)))
-            );
-
             // Add content with proper filtering
             $content = $cta->post_content;
             if (!empty($content)) {
-                // Use a basic subset of allowed HTML tags instead of full content filtering
                 $allowed_html = array(
                     'p' => array(),
                     'br' => array(),
@@ -871,20 +893,39 @@ class Nova_CTA_Manager {
                         'class' => array()
                     )
                 );
-                $html .= wp_kses($content, $allowed_html);
+                $html .= sprintf(
+                    '<div class="nova-cta-text">%s</div>',
+                    wp_kses($content, $allowed_html)
+                );
             }
 
             // Add button if we have text
             if (!empty($button_text)) {
                 $html .= sprintf(
-                    '<a href="%s" target="%s" class="nova-button">%s</a>',
+                    '<div class="nova-cta-button-wrapper"><a href="%s" target="%s" class="nova-button">%s</a></div>',
                     esc_url($button_url),
                     esc_attr($button_target),
                     esc_html($button_text)
                 );
             }
 
-            $html .= '</div></div>';
+            $html .= '</div>'; // Close content wrapper
+
+            // Add inline image if set
+            if (!empty($inline_image)) {
+                $image_styles = array(
+                    'width: ' . (100 - $content_width) . '%'
+                );
+                
+                $html .= sprintf(
+                    '<div class="nova-cta-image" style="%s">%s</div>',
+                    esc_attr(implode('; ', $image_styles)),
+                    wp_get_attachment_image($inline_image, 'large')
+                );
+            }
+
+            $html .= '</div>'; // Close flex container
+            $html .= '</div>'; // Close main CTA wrapper
 
             error_log('Nova CTAs: Successfully built CTA HTML');
             return $html;

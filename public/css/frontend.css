@@ -175,36 +175,59 @@
 
 /* Base CTA Container */
 .nova-cta {
+    margin: 2rem 0;
     position: relative;
-    width: 100%;
-    box-sizing: border-box;
     overflow: hidden;
-    transition: all 0.3s ease;
 }
 
-/* CTA Title */
-.nova-cta-title {
-    margin: 0 0 1rem;
-    line-height: 1.2;
-    font-size: 1.75rem;
-    font-weight: 700;
+.nova-cta-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
 }
 
-/* CTA Content */
+/* Content Styles */
 .nova-cta-content {
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: var(--element-gap, 20px);
 }
 
-.nova-cta-content p:first-child {
+.nova-cta-title {
+    margin: 0;
+    line-height: 1.2;
+}
+
+.nova-cta-text {
+    margin: 0;
+}
+
+.nova-cta-text > *:first-child {
     margin-top: 0;
 }
 
-.nova-cta-content p:last-child {
+.nova-cta-text > *:last-child {
     margin-bottom: 0;
 }
 
-/* CTA Button Base Styles */
+/* Button Styles */
+.nova-cta-button-wrapper {
+    display: flex;
+}
+
+.nova-cta-align-left .nova-cta-button-wrapper {
+    justify-content: flex-start;
+}
+
+.nova-cta-align-center .nova-cta-button-wrapper {
+    justify-content: center;
+}
+
+.nova-cta-align-right .nova-cta-button-wrapper {
+    justify-content: flex-end;
+}
+
 .nova-button {
     display: inline-flex;
     align-items: center;
@@ -212,123 +235,56 @@
     padding: 0.75rem 1.5rem;
     border-radius: 4px;
     text-decoration: none;
-    font-weight: 600;
-    line-height: 1.4;
     transition: all 0.2s ease;
-    cursor: pointer;
-    border: none;
-    min-width: 120px;
+    line-height: 1.4;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
-/* Button Variations */
-.nova-cta-button-default .nova-button {
-    background-color: #007bff;
-    color: #ffffff;
-}
-
-.nova-cta-button-default .nova-button:hover {
-    background-color: #0056b3;
-    transform: translateY(-1px);
-}
-
-.nova-cta-button-outline .nova-button {
-    background-color: transparent;
-    border: 2px solid #007bff;
-    color: #007bff;
-}
-
-.nova-cta-button-outline .nova-button:hover {
-    background-color: #007bff;
-    color: #ffffff;
-}
-
-.nova-cta-button-ghost .nova-button {
-    background-color: transparent;
-    border: none;
-    color: #007bff;
-    padding: 0.5rem 0;
-    position: relative;
-    min-width: auto;
-}
-
-.nova-cta-button-ghost .nova-button::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: currentColor;
-    transform: scaleX(0);
-    transition: transform 0.2s ease;
-}
-
-.nova-cta-button-ghost .nova-button:hover::after {
-    transform: scaleX(1);
-}
-
-/* CTA Layouts */
-.nova-cta-standard {
+/* Image Styles */
+.nova-cta-image {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-}
-
-.nova-cta-centered {
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
-    gap: 1.5rem;
+    justify-content: center;
 }
 
-.nova-cta-horizontal {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
-    align-items: center;
+.nova-cta-image img {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
-/* Background Image Styles */
-.nova-cta[style*="background-image"] {
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: cover;
+/* Layout Variations */
+.nova-cta-layout-text-only .nova-cta-content {
+    width: 100% !important;
 }
 
-/* Dark Background Text */
-.nova-cta[style*="background-color: #"] {
-    color: #ffffff;
+.nova-cta-image-left .nova-cta-container {
+    flex-direction: row-reverse;
 }
 
-.nova-cta[style*="background-color: #"] .nova-button {
-    background-color: #ffffff;
-    color: #000000;
-}
-
-.nova-cta[style*="background-color: #"] .nova-button:hover {
-    background-color: rgba(255, 255, 255, 0.9);
-}
-
-/* Responsive Design */
+/* Responsive Styles */
 @media (max-width: 768px) {
-    .nova-cta {
-        padding: 1.5rem !important;
-    }
-
-    .nova-cta-title {
-        font-size: 1.5rem;
-    }
-
-    .nova-cta-horizontal {
-        grid-template-columns: 1fr;
+    .nova-cta-container {
+        flex-direction: column !important;
         gap: 1.5rem;
     }
 
-    .nova-button {
-        width: 100%;
-        text-align: center;
+    .nova-cta-content,
+    .nova-cta-image {
+        width: 100% !important;
+    }
+
+    .nova-cta-image {
+        order: -1;
+    }
+
+    .nova-cta-title {
+        font-size: calc(var(--title-font-size, 2rem) * 0.85);
+    }
+
+    .nova-cta-text {
+        font-size: calc(var(--body-font-size, 1rem) * 0.9);
     }
 }
 
