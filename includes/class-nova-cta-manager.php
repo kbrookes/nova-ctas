@@ -159,15 +159,16 @@ class Nova_CTA_Manager {
 
             <div class="nova-tab-content active" data-tab="content">
                 <div class="nova-field-group">
-                    <label for="nova_cta_content"><?php _e('Content:', 'nova-ctas'); ?></label>
+                    <label><?php _e('Content:', 'nova-ctas'); ?>
                     <?php 
-                    wp_editor($content, 'content', array(
+                    wp_editor($content, 'nova_cta_content', array(
                         'textarea_name' => 'content',
                         'media_buttons' => true,
                         'textarea_rows' => 10,
                         'teeny' => false
                     ));
                     ?>
+                    </label>
                 </div>
 
                 <div class="nova-field-group">
@@ -354,45 +355,60 @@ class Nova_CTA_Manager {
             <div class="nova-field-group">
                 <h4><?php _e('Margin', 'nova-ctas'); ?></h4>
                 <div class="nova-spacing-inputs">
-                    <label data-position="top">
-                        <?php _e('Top', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[margin_top]" value="<?php echo esc_attr($margin['top']); ?>" class="tiny-text">
-                    </label>
-                    <label data-position="right">
-                        <?php _e('Right', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[margin_right]" value="<?php echo esc_attr($margin['right']); ?>" class="tiny-text">
-                    </label>
-                    <label data-position="bottom">
-                        <?php _e('Bottom', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[margin_bottom]" value="<?php echo esc_attr($margin['bottom']); ?>" class="tiny-text">
-                    </label>
-                    <label data-position="left">
-                        <?php _e('Left', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[margin_left]" value="<?php echo esc_attr($margin['left']); ?>" class="tiny-text">
-                    </label>
-                    <label data-position="center"></label>
+                    <div class="spacing-input">
+                        <label>
+                            <?php _e('Top', 'nova-ctas'); ?>
+                            <input type="number" name="nova_cta_design[margin_top]" value="<?php echo esc_attr($margin['top']); ?>" class="tiny-text">
+                        </label>
+                    </div>
+                    <div class="spacing-input">
+                        <label>
+                            <?php _e('Right', 'nova-ctas'); ?>
+                            <input type="number" name="nova_cta_design[margin_right]" value="<?php echo esc_attr($margin['right']); ?>" class="tiny-text">
+                        </label>
+                    </div>
+                    <div class="spacing-input">
+                        <label>
+                            <?php _e('Bottom', 'nova-ctas'); ?>
+                            <input type="number" name="nova_cta_design[margin_bottom]" value="<?php echo esc_attr($margin['bottom']); ?>" class="tiny-text">
+                        </label>
+                    </div>
+                    <div class="spacing-input">
+                        <label>
+                            <?php _e('Left', 'nova-ctas'); ?>
+                            <input type="number" name="nova_cta_design[margin_left]" value="<?php echo esc_attr($margin['left']); ?>" class="tiny-text">
+                        </label>
+                    </div>
                 </div>
             </div>
 
             <div class="nova-field-group">
                 <h4><?php _e('Box Shadow', 'nova-ctas'); ?></h4>
                 <div class="nova-shadow-inputs">
-                    <label>
-                        <?php _e('X Offset', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[shadow_x]" value="<?php echo esc_attr($shadow['x']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Y Offset', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[shadow_y]" value="<?php echo esc_attr($shadow['y']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Blur', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[shadow_blur]" value="<?php echo esc_attr($shadow['blur']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Spread', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[shadow_spread]" value="<?php echo esc_attr($shadow['spread']); ?>" class="tiny-text">
-                    </label>
+                    <div class="shadow-input">
+                        <label>
+                            <?php _e('X Offset', 'nova-ctas'); ?>
+                            <input type="number" name="nova_cta_design[shadow_x]" value="<?php echo esc_attr($shadow['x']); ?>" class="tiny-text">
+                        </label>
+                    </div>
+                    <div class="shadow-input">
+                        <label>
+                            <?php _e('Y Offset', 'nova-ctas'); ?>
+                            <input type="number" name="nova_cta_design[shadow_y]" value="<?php echo esc_attr($shadow['y']); ?>" class="tiny-text">
+                        </label>
+                    </div>
+                    <div class="shadow-input">
+                        <label>
+                            <?php _e('Blur', 'nova-ctas'); ?>
+                            <input type="number" name="nova_cta_design[shadow_blur]" value="<?php echo esc_attr($shadow['blur']); ?>" class="tiny-text">
+                        </label>
+                    </div>
+                    <div class="shadow-input">
+                        <label>
+                            <?php _e('Spread', 'nova-ctas'); ?>
+                            <input type="number" name="nova_cta_design[shadow_spread]" value="<?php echo esc_attr($shadow['spread']); ?>" class="tiny-text">
+                        </label>
+                    </div>
                 </div>
                 <div class="nova-field-group">
                     <label for="nova_cta_shadow_color"><?php _e('Shadow Color:', 'nova-ctas'); ?></label>
@@ -411,14 +427,15 @@ class Nova_CTA_Manager {
             </div>
 
             <div class="nova-field-group">
-                <label for="nova_cta_bg_image"><?php _e('Background Image:', 'nova-ctas'); ?></label>
                 <div class="nova-media-wrapper">
-                    <input type="hidden" name="nova_cta_design[bg_image]" value="<?php echo esc_attr($bg_image); ?>">
-                    <button type="button" class="button nova-media-upload"><?php _e('Choose Image', 'nova-ctas'); ?></button>
-                    <button type="button" class="button nova-remove-image" <?php echo empty($bg_image) ? 'style="display:none;"' : ''; ?>>
+                    <label><?php _e('Background Image:', 'nova-ctas'); ?>
+                    <input type="hidden" id="nova_cta_bg_image_input" name="nova_cta_design[bg_image]" value="<?php echo esc_attr($bg_image); ?>">
+                    <button type="button" class="button nova-media-upload" aria-label="<?php esc_attr_e('Choose Image', 'nova-ctas'); ?>"><?php _e('Choose Image', 'nova-ctas'); ?></button>
+                    <button type="button" class="button nova-remove-image" <?php echo empty($bg_image) ? 'style="display:none;"' : ''; ?> aria-label="<?php esc_attr_e('Remove Image', 'nova-ctas'); ?>">
                         <?php _e('Remove Image', 'nova-ctas'); ?>
                     </button>
-                    <div class="nova-media-preview">
+                    </label>
+                    <div class="nova-media-preview" aria-live="polite">
                         <?php if ($bg_image): ?>
                             <?php echo wp_get_attachment_image($bg_image, 'medium'); ?>
                         <?php endif; ?>
@@ -556,6 +573,9 @@ class Nova_CTA_Manager {
         error_log('Nova CTAs: Current user can edit: ' . (current_user_can('edit_post', $post_id) ? 'yes' : 'no'));
         error_log('Nova CTAs: Post type: ' . get_post_type($post_id));
         
+        // Log all POST data for debugging
+        error_log('Nova CTAs: Full POST data: ' . print_r($_POST, true));
+        
         if (isset($_POST)) {
             error_log('Nova CTAs: POST keys present: ' . print_r(array_keys($_POST), true));
         }
@@ -601,6 +621,7 @@ class Nova_CTA_Manager {
         // Save content if it exists
         if (isset($_POST['content'])) {
             error_log('Nova CTAs: Saving content');
+            error_log('Nova CTAs: Content value: ' . $_POST['content']);
             remove_action('save_post_nova_cta', array($this, 'save_cta_data'));
             wp_update_post(array(
                 'ID' => $post_id,
@@ -612,6 +633,8 @@ class Nova_CTA_Manager {
         // Save settings
         if (isset($_POST['nova_cta_settings'])) {
             error_log('Nova CTAs: Saving CTA settings');
+            error_log('Nova CTAs: Raw settings data: ' . print_r($_POST['nova_cta_settings'], true));
+            
             $settings = $_POST['nova_cta_settings'];
             
             // Initialize display_categories as empty array if not set
@@ -627,7 +650,13 @@ class Nova_CTA_Manager {
             );
             
             error_log('Nova CTAs: Sanitized settings: ' . print_r($sanitized_settings, true));
-            update_post_meta($post_id, '_nova_cta_settings', $sanitized_settings);
+            
+            // Delete existing meta first
+            delete_post_meta($post_id, '_nova_cta_settings');
+            
+            // Save new settings
+            $update_result = update_post_meta($post_id, '_nova_cta_settings', $sanitized_settings);
+            error_log('Nova CTAs: Settings update_post_meta result: ' . var_export($update_result, true));
             
             // Verify settings were saved
             $saved_settings = get_post_meta($post_id, '_nova_cta_settings', true);
@@ -660,27 +689,6 @@ class Nova_CTA_Manager {
             }
         } else {
             error_log('Nova CTAs: No design settings found in POST data');
-        }
-
-        // Save display settings
-        if (isset($_POST['nova_cta_display'])) {
-            error_log('Nova CTAs: Saving display settings');
-            $display = $_POST['nova_cta_display'];
-            
-            $display_settings = array(
-                'first_position' => isset($display['first_position']) ? absint($display['first_position']) : 30,
-                'show_end' => isset($display['show_end']),
-                'conditions' => isset($display['conditions']) && is_array($display['conditions']) 
-                    ? array_map('sanitize_text_field', $display['conditions']) 
-                    : array()
-            );
-            
-            error_log('Nova CTAs: Sanitized display settings: ' . print_r($display_settings, true));
-            update_post_meta($post_id, '_nova_cta_display', $display_settings);
-            
-            // Verify display settings were saved
-            $saved_display = get_post_meta($post_id, '_nova_cta_display', true);
-            error_log('Nova CTAs: Verified saved display settings: ' . print_r($saved_display, true));
         }
 
         error_log('Nova CTAs: ====== END save_cta_data (completed) ======');
