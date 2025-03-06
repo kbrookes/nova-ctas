@@ -1,0 +1,125 @@
+/* Settings Page Layout */
+.nova-settings-page {
+    margin: 20px;
+}
+
+.nova-settings-page h1 {
+    margin-bottom: 20px;
+}
+
+/* Tabs Navigation */
+.nova-tabs {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 0;
+}
+
+.nova-tab-button {
+    background: #f1f1f1;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    margin-right: 5px;
+    margin-bottom: -1px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.nova-tab-button:hover {
+    background: #fff;
+}
+
+.nova-tab-button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.nova-tab-button.active {
+    background: #fff;
+    border-bottom-color: #fff;
+}
+
+/* Settings Sections */
+.nova-settings-section {
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.nova-settings-section h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Form Fields */
+.nova-color-fields,
+.nova-style-fields,
+.nova-display-fields {
+    max-width: 600px;
+}
+
+.nova-color-fields p,
+.nova-style-fields p,
+.nova-display-fields p {
+    margin-bottom: 15px;
+}
+
+.nova-color-fields label,
+.nova-style-fields label,
+.nova-display-fields label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.nova-color-fields input[type="text"],
+.nova-style-fields input[type="text"] {
+    width: 100%;
+}
+
+/* Color Swatches */
+.nova-color-swatches {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.nova-color-swatch {
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+}
+
+.nova-color-swatch:hover {
+    transform: scale(1.1);
+}
+
+/* Radio and Checkbox Groups */
+.nova-display-fields label {
+    margin-right: 20px;
+}
+
+.nova-display-fields input[type="radio"],
+.nova-display-fields input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 782px) {
+    .nova-settings-page {
+        margin: 10px;
+    }
+
+    .nova-tab-button {
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+
+    .nova-settings-section {
+        padding: 15px;
+    }
+} 
