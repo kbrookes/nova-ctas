@@ -15,7 +15,6 @@ class Nova_CTA_Manager {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_styles'));
         add_action('edit_form_after_title', array($this, 'render_cta_admin_page'));
         add_action('save_post_nova_cta', array($this, 'save_cta_data'));
-        add_action('add_meta_boxes', array($this, 'add_cta_meta_boxes'));
         
         // Register shortcodes
         $this->register_shortcodes();
@@ -128,6 +127,8 @@ class Nova_CTA_Manager {
         $button_text = isset($settings['button_text']) ? $settings['button_text'] : '';
         $button_url = isset($settings['button_url']) ? $settings['button_url'] : '';
         $button_target = isset($settings['button_target']) ? $settings['button_target'] : '_self';
+        $display_categories = isset($settings['display_categories']) ? $settings['display_categories'] : array();
+        $pillar_page = isset($settings['pillar_page']) ? $settings['pillar_page'] : '';
         
         ?>
         <div class="nova-cta-editor">
@@ -808,18 +809,6 @@ class Nova_CTA_Manager {
         }
 
         return implode('</p>', $paragraphs);
-    }
-
-    public function add_cta_meta_boxes() {
-        // Display rules (side)
-        add_meta_box(
-            'nova_cta_relationships',
-            __('CTA Display Rules', 'nova-ctas'),
-            array($this, 'render_relationship_settings'),
-            'nova_cta',
-            'side',
-            'default'
-        );
     }
 
     public function render_relationship_settings($post) {
