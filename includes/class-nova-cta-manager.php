@@ -692,18 +692,27 @@ class Nova_CTA_Manager {
 
     private function build_cta_html($cta, $atts = array()) {
         try {
+            error_log('Nova CTAs: Starting to build CTA HTML for ID: ' . $cta->ID);
+
             // Validate CTA object
             if (!$cta || !is_object($cta) || $cta->post_type !== 'nova_cta') {
+                error_log('Nova CTAs: Invalid CTA object');
                 return '';
             }
 
             // Get and validate settings
             $settings = get_post_meta($cta->ID, '_nova_cta_settings', true);
-            $settings = is_array($settings) ? $settings : array();
+            if (!is_array($settings)) {
+                error_log('Nova CTAs: Invalid settings for CTA ID: ' . $cta->ID);
+                $settings = array();
+            }
 
             // Get and validate design settings
             $design = get_post_meta($cta->ID, '_nova_cta_design', true);
-            $design = is_array($design) ? $design : array();
+            if (!is_array($design)) {
+                error_log('Nova CTAs: Invalid design settings for CTA ID: ' . $cta->ID);
+                $design = array();
+            }
             
             // Merge shortcode attributes with saved settings
             $design = wp_parse_args($atts, $design);
@@ -715,12 +724,15 @@ class Nova_CTA_Manager {
             // Handle button URL with pillar page fallback
             if (!empty($settings['pillar_page'])) {
                 $button_url = get_permalink($settings['pillar_page']);
+                error_log('Nova CTAs: Using pillar page URL: ' . $button_url);
             } elseif (!empty($settings['button_url'])) {
                 $button_url = $settings['button_url'];
+                error_log('Nova CTAs: Using custom button URL: ' . $button_url);
             }
             
             if (empty($button_url)) {
                 $button_url = '#';
+                error_log('Nova CTAs: No URL found, using fallback: #');
             }
             
             $button_target = isset($settings['button_target']) ? $settings['button_target'] : '_self';
@@ -826,31 +838,48 @@ class Nova_CTA_Manager {
 
             $html .= '</div></div>';
 
+            error_log('Nova CTAs: Successfully built CTA HTML');
             return $html;
             
         } catch (Exception $e) {
             error_log('Nova CTAs Error in build_cta_html: ' . $e->getMessage());
+            error_log('Nova CTAs Stack Trace: ' . $e->getTraceAsString());
             return '';
         }
     }
 
     public function maybe_insert_cta($content) {
         try {
+            // Enable error reporting
+            error_reporting(E_ALL);
+            ini_set('display_errors', 0);
+            ini_set('log_errors', 1);
+
+            // Log the start of CTA insertion
+            error_log('Nova CTAs: Starting CTA insertion process');
+
             // Don't modify content in admin or if not in the main query
             if (is_admin() || !in_the_loop() || !is_main_query()) {
+                error_log('Nova CTAs: Skipping CTA insertion - not in main query or in admin');
                 return $content;
             }
 
             // Get post categories
             $post_id = get_the_ID();
             if (!$post_id) {
+                error_log('Nova CTAs: No post ID found');
                 return $content;
             }
 
+            error_log('Nova CTAs: Processing post ID: ' . $post_id);
+
             $post_categories = wp_get_post_categories($post_id);
             if (empty($post_categories)) {
+                error_log('Nova CTAs: No categories found for post ID: ' . $post_id);
                 return $content;
             }
+
+            error_log('Nova CTAs: Found categories: ' . implode(', ', $post_categories));
 
             // Get all CTAs
             $ctas = get_posts(array(
@@ -861,24 +890,43 @@ class Nova_CTA_Manager {
             ));
 
             if (empty($ctas)) {
+                error_log('Nova CTAs: No CTAs found');
                 return $content;
             }
 
+            error_log('Nova CTAs: Found ' . count($ctas) . ' CTAs');
+
             // Split content into paragraphs safely
             $paragraphs = preg_split('/<\/?p>/', $content);
+            if ($paragraphs === false) {
+                error_log('Nova CTAs: Error splitting content into paragraphs');
+                return $content;
+            }
+
             $paragraphs = array_filter($paragraphs, function($p) {
                 return !empty(trim($p));
             });
             $total_paragraphs = count($paragraphs);
 
+            error_log('Nova CTAs: Found ' . $total_paragraphs . ' paragraphs');
+
             if ($total_paragraphs === 0) {
+                error_log('Nova CTAs: No paragraphs found in content');
                 return $content;
             }
 
             foreach ($ctas as $cta_id) {
+                error_log('Nova CTAs: Processing CTA ID: ' . $cta_id);
+
                 // Get and validate settings
                 $settings = get_post_meta($cta_id, '_nova_cta_settings', true);
-                if (!is_array($settings) || empty($settings['display_categories'])) {
+                if (!is_array($settings)) {
+                    error_log('Nova CTAs: Invalid settings for CTA ID: ' . $cta_id);
+                    continue;
+                }
+
+                if (empty($settings['display_categories'])) {
+                    error_log('Nova CTAs: No display categories set for CTA ID: ' . $cta_id);
                     continue;
                 }
 
@@ -887,8 +935,11 @@ class Nova_CTA_Manager {
                 // Check for matching categories
                 $matching_categories = array_intersect($post_categories, $display_categories);
                 if (empty($matching_categories)) {
+                    error_log('Nova CTAs: No matching categories for CTA ID: ' . $cta_id);
                     continue;
                 }
+
+                error_log('Nova CTAs: Found matching categories for CTA ID: ' . $cta_id);
 
                 // Get and validate display settings
                 $display = get_post_meta($cta_id, '_nova_cta_display', true);
@@ -904,40 +955,66 @@ class Nova_CTA_Manager {
                     $insert_position = floor($total_paragraphs / 2);
                 }
 
+                error_log('Nova CTAs: Calculated insert position: ' . $insert_position);
+
                 // Get CTA content
                 $cta = get_post($cta_id);
                 if (!$cta || $cta->post_type !== 'nova_cta') {
+                    error_log('Nova CTAs: Invalid CTA post object for ID: ' . $cta_id);
                     continue;
                 }
 
-                $cta_html = $this->build_cta_html($cta);
-                if (empty($cta_html)) {
+                try {
+                    $cta_html = $this->build_cta_html($cta);
+                    if (empty($cta_html)) {
+                        error_log('Nova CTAs: Empty CTA HTML generated for ID: ' . $cta_id);
+                        continue;
+                    }
+                } catch (Exception $e) {
+                    error_log('Nova CTAs: Error building CTA HTML: ' . $e->getMessage());
                     continue;
                 }
 
                 // Insert CTA at calculated position
                 if ($insert_position > 0 && $insert_position < $total_paragraphs) {
-                    $paragraphs[$insert_position] .= $cta_html;
+                    try {
+                        $paragraphs[$insert_position] .= $cta_html;
+                        error_log('Nova CTAs: Inserted CTA at position: ' . $insert_position);
+                    } catch (Exception $e) {
+                        error_log('Nova CTAs: Error inserting CTA: ' . $e->getMessage());
+                        continue;
+                    }
                 }
 
                 // Add CTA at the end if enabled
                 if ($show_end) {
-                    $paragraphs[] = $cta_html;
+                    try {
+                        $paragraphs[] = $cta_html;
+                        error_log('Nova CTAs: Added CTA at end of content');
+                    } catch (Exception $e) {
+                        error_log('Nova CTAs: Error adding CTA at end: ' . $e->getMessage());
+                    }
                 }
             }
 
             // Rebuild content safely
-            $modified_content = '';
-            foreach ($paragraphs as $p) {
-                if (!empty(trim($p))) {
-                    $modified_content .= '<p>' . trim($p) . '</p>';
+            try {
+                $modified_content = '';
+                foreach ($paragraphs as $p) {
+                    if (!empty(trim($p))) {
+                        $modified_content .= '<p>' . trim($p) . '</p>';
+                    }
                 }
+                error_log('Nova CTAs: Successfully rebuilt content with CTAs');
+                return $modified_content;
+            } catch (Exception $e) {
+                error_log('Nova CTAs: Error rebuilding content: ' . $e->getMessage());
+                return $content;
             }
 
-            return $modified_content;
-
         } catch (Exception $e) {
-            error_log('Nova CTAs Error in maybe_insert_cta: ' . $e->getMessage());
+            error_log('Nova CTAs Critical Error: ' . $e->getMessage());
+            error_log('Nova CTAs Stack Trace: ' . $e->getTraceAsString());
             return $content;
         }
     }
