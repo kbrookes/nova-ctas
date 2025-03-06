@@ -135,6 +135,7 @@ class Nova_CTA_Manager {
                 <button type="button" class="nova-tab-button active" data-tab="content"><?php _e('Content', 'nova-ctas'); ?></button>
                 <button type="button" class="nova-tab-button" data-tab="design"><?php _e('Design', 'nova-ctas'); ?></button>
                 <button type="button" class="nova-tab-button" data-tab="display"><?php _e('Display', 'nova-ctas'); ?></button>
+                <button type="button" class="nova-tab-button" data-tab="relationships"><?php _e('Relationships', 'nova-ctas'); ?></button>
             </div>
 
             <div class="nova-tab-content active" data-tab="content">
@@ -176,6 +177,12 @@ class Nova_CTA_Manager {
             <div class="nova-tab-content" data-tab="display">
                 <?php $this->render_display_tab($display); ?>
             </div>
+
+            <div class="nova-tab-content" data-tab="relationships">
+                <?php $this->render_relationship_settings($post); ?>
+            </div>
+
+            <?php wp_nonce_field('nova_cta_editor', 'nova_cta_editor_nonce'); ?>
         </div>
         <?php
     }
@@ -449,48 +456,86 @@ class Nova_CTA_Manager {
         <?php
     }
 
-    public function save_cta_data() {
+    public function save_cta_data($post_id) {
+        // Verify nonce
         if (!isset($_POST['nova_cta_editor_nonce']) || 
             !wp_verify_nonce($_POST['nova_cta_editor_nonce'], 'nova_cta_editor')) {
             return;
         }
 
-        $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+        // Check autosave
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
 
-        // Create or update post
-        $post_data = array(
-            'post_title' => sanitize_text_field($_POST['post_title']),
-            'post_content' => wp_kses_post($_POST['post_content']),
-            'post_type' => 'nova_cta',
-            'post_status' => 'publish'
-        );
+        // Check permissions
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
 
-        if ($post_id) {
-            $post_data['ID'] = $post_id;
-            $post_id = wp_update_post($post_data);
+        // Save content
+        if (isset($_POST['content'])) {
+            $content = wp_kses_post($_POST['content']);
+            $post_data = array(
+                'ID' => $post_id,
+                'post_content' => $content
+            );
+            wp_update_post($post_data);
+        }
+
+        // Save settings (including categories and pillar page)
+        if (isset($_POST['nova_cta_settings'])) {
+            $settings = $_POST['nova_cta_settings'];
+            
+            // Initialize arrays if not set
+            if (!isset($settings['display_categories'])) {
+                $settings['display_categories'] = array();
+            }
+
+            // Ensure display_categories is always an array
+            $settings['display_categories'] = (array)$settings['display_categories'];
+            
+            // Sanitize settings
+            $sanitized_settings = array(
+                'button_text' => isset($settings['button_text']) ? sanitize_text_field($settings['button_text']) : '',
+                'button_url' => isset($settings['button_url']) ? esc_url_raw($settings['button_url']) : '',
+                'button_target' => isset($settings['button_target']) ? sanitize_text_field($settings['button_target']) : '_self',
+                'display_categories' => array_map('absint', $settings['display_categories']),
+                'pillar_page' => isset($settings['pillar_page']) ? absint($settings['pillar_page']) : ''
+            );
+            
+            update_post_meta($post_id, '_nova_cta_settings', $sanitized_settings);
         } else {
-            $post_id = wp_insert_post($post_data);
+            // If no settings were posted, clear the categories
+            $settings = get_post_meta($post_id, '_nova_cta_settings', true);
+            if ($settings) {
+                $settings['display_categories'] = array();
+                update_post_meta($post_id, '_nova_cta_settings', $settings);
+            }
         }
 
-        if ($post_id) {
-            // Save settings
-            if (isset($_POST['nova_cta_settings'])) {
-                update_post_meta($post_id, '_nova_cta_settings', $_POST['nova_cta_settings']);
-            }
-
-            // Save design
-            if (isset($_POST['nova_cta_design'])) {
-                update_post_meta($post_id, '_nova_cta_design', $_POST['nova_cta_design']);
-            }
-
-            // Save display
-            if (isset($_POST['nova_cta_display'])) {
-                update_post_meta($post_id, '_nova_cta_display', $_POST['nova_cta_display']);
-            }
-
-            wp_redirect(admin_url('edit.php?post_type=nova_cta&page=edit-nova-cta&post=' . $post_id . '&updated=true'));
-            exit;
+        // Save design settings
+        if (isset($_POST['nova_cta_design'])) {
+            $design = $_POST['nova_cta_design'];
+            update_post_meta($post_id, '_nova_cta_design', $this->sanitize_design_settings($design));
         }
+
+        // Save display settings
+        if (isset($_POST['nova_cta_display'])) {
+            $display = $_POST['nova_cta_display'];
+            
+            $display_settings = array(
+                'first_position' => isset($display['first_position']) ? absint($display['first_position']) : 30,
+                'show_end' => isset($display['show_end']) && $display['show_end'] == '1',
+                'conditions' => isset($display['conditions']) ? array_map('sanitize_text_field', (array)$display['conditions']) : array()
+            );
+            
+            update_post_meta($post_id, '_nova_cta_display', $display_settings);
+        }
+    }
+
+    private function sanitize_design_settings($design) {
+        // ... existing sanitize_design_settings code ...
     }
 
     public function add_pillar_page_meta_box() {
@@ -507,35 +552,15 @@ class Nova_CTA_Manager {
     public function render_pillar_page_meta_box($post) {
         wp_nonce_field('nova_pillar_page', 'nova_pillar_page_nonce');
         $is_pillar = get_post_meta($post->ID, '_is_pillar_page', true);
-        $related_ctas = get_post_meta($post->ID, '_related_ctas', true);
         ?>
         <p>
             <label>
                 <input type="checkbox" name="is_pillar_page" value="1" <?php checked($is_pillar, '1'); ?>>
-                <?php _e('This is a pillar page', 'nova-ctas'); ?>
+                <?php _e('Mark this as a pillar page', 'nova-ctas'); ?>
             </label>
         </p>
-        <p>
-            <label for="related_ctas"><?php _e('Related CTAs:', 'nova-ctas'); ?></label>
-            <?php
-            $ctas = get_posts(array(
-                'post_type' => 'nova_cta',
-                'posts_per_page' => -1,
-                'orderby' => 'title',
-                'order' => 'ASC'
-            ));
-
-            if ($ctas) {
-                echo '<select name="related_ctas[]" id="related_ctas" multiple style="width: 100%;">';
-                foreach ($ctas as $cta) {
-                    $selected = is_array($related_ctas) && in_array($cta->ID, $related_ctas) ? 'selected' : '';
-                    echo '<option value="' . esc_attr($cta->ID) . '" ' . $selected . '>' . esc_html($cta->post_title) . '</option>';
-                }
-                echo '</select>';
-            } else {
-                _e('No CTAs available', 'nova-ctas');
-            }
-            ?>
+        <p class="description">
+            <?php _e('Pillar pages are key content pages that CTAs can link to.', 'nova-ctas'); ?>
         </p>
         <?php
     }
@@ -564,10 +589,6 @@ class Nova_CTA_Manager {
         // Save pillar page status
         $is_pillar = isset($_POST['is_pillar_page']) ? '1' : '0';
         update_post_meta($post_id, '_is_pillar_page', $is_pillar);
-
-        // Save related CTAs
-        $related_ctas = isset($_POST['related_ctas']) ? array_map('intval', $_POST['related_ctas']) : array();
-        update_post_meta($post_id, '_related_ctas', $related_ctas);
     }
 
     public function render_cta_shortcode($atts) {
@@ -678,121 +699,75 @@ class Nova_CTA_Manager {
     }
 
     public function maybe_insert_cta($content) {
-        if (!is_singular()) {
+        // Don't modify content in admin or if not in the main query
+        if (is_admin() || !in_the_loop() || !is_main_query()) {
             return $content;
         }
 
-        $post_id = get_the_ID();
-        $post_type = get_post_type();
-
-        // Get display settings
-        $options = get_option('nova_ctas_settings', array());
-        $auto_insert = isset($options['auto_insert']) ? $options['auto_insert'] : 'disabled';
-
-        if ($auto_insert === 'disabled') {
+        // Get post categories
+        $post_categories = wp_get_post_categories(get_the_ID());
+        if (empty($post_categories)) {
             return $content;
         }
 
-        // Get all CTAs that should be displayed
-        $ctas = $this->get_ctas_for_post($post_id, $post_type);
+        // Get all CTAs
+        $ctas = get_posts(array(
+            'post_type' => 'nova_cta',
+            'posts_per_page' => -1,
+            'post_status' => 'publish'
+        ));
+
         if (empty($ctas)) {
             return $content;
         }
 
-        // Get actual paragraphs (not just HTML tags)
-        $paragraphs = explode("\n\n", $content);
+        $matching_ctas = array();
+        foreach ($ctas as $cta) {
+            $settings = get_post_meta($cta->ID, '_nova_cta_settings', true);
+            $display_categories = isset($settings['display_categories']) ? (array)$settings['display_categories'] : array();
+            
+            // Check if this CTA should be displayed in any of the post's categories
+            $matching_categories = array_intersect($post_categories, $display_categories);
+            if (!empty($matching_categories)) {
+                $matching_ctas[] = $cta;
+            }
+        }
+
+        if (empty($matching_ctas)) {
+            return $content;
+        }
+
+        // Split content into paragraphs
+        $paragraphs = explode('</p>', $content);
         $total_paragraphs = count($paragraphs);
 
-        // Calculate all CTA positions first
-        $cta_positions = array();
-        foreach ($ctas as $cta) {
+        foreach ($matching_ctas as $cta) {
             $display = get_post_meta($cta->ID, '_nova_cta_display', true);
-            $first_position = isset($display['first_position']) ? $display['first_position'] : 30;
             
-            // Calculate paragraph position based on percentage
-            $insert_at = max(1, floor($total_paragraphs * ($first_position / 100)));
+            // Get position settings
+            $first_position = isset($display['first_position']) ? absint($display['first_position']) : 30;
+            $show_end = isset($display['show_end']) ? (bool)$display['show_end'] : true;
+
+            // Calculate position to insert CTA
+            $insert_position = floor(($total_paragraphs * $first_position) / 100);
             
-            // Ensure we don't insert too close to the end
-            if ($insert_at > ($total_paragraphs - 2)) {
-                $insert_at = max(1, $total_paragraphs - 2);
+            // Ensure we don't insert too close to the end if showing at end
+            if ($show_end && $insert_position > ($total_paragraphs - 3)) {
+                $insert_position = floor($total_paragraphs / 2);
             }
 
-            // Store positions
-            $cta_positions[$insert_at][] = $cta->ID;
-            if (!empty($display['show_end'])) {
-                $cta_positions['end'][] = $cta->ID;
+            // Insert CTA at calculated position
+            if ($insert_position > 0 && $insert_position < $total_paragraphs) {
+                $paragraphs[$insert_position] .= $this->build_cta_html($cta);
+            }
+
+            // Add CTA at the end if enabled
+            if ($show_end) {
+                $paragraphs[] = $this->build_cta_html($cta);
             }
         }
 
-        // Build new content with CTAs
-        $new_content = array();
-        foreach ($paragraphs as $index => $paragraph) {
-            $new_content[] = $paragraph;
-            
-            // Insert CTAs after appropriate paragraphs
-            if (isset($cta_positions[$index + 1])) {
-                foreach ($cta_positions[$index + 1] as $cta_id) {
-                    $new_content[] = sprintf('[nova_cta id="%d"]', $cta_id);
-                }
-            }
-        }
-
-        // Add end-of-content CTAs
-        if (isset($cta_positions['end'])) {
-            foreach ($cta_positions['end'] as $cta_id) {
-                $new_content[] = sprintf('[nova_cta id="%d"]', $cta_id);
-            }
-        }
-
-        return implode("\n\n", $new_content);
-    }
-
-    private function get_ctas_for_post($post_id, $post_type) {
-        $ctas = array();
-
-        // Check if this is a pillar page
-        $is_pillar = get_post_meta($post_id, '_is_pillar_page', true);
-        if ($is_pillar) {
-            $related_ctas = get_post_meta($post_id, '_related_ctas', true);
-            if (!empty($related_ctas)) {
-                $ctas = get_posts(array(
-                    'post_type' => 'nova_cta',
-                    'post__in' => $related_ctas,
-                    'posts_per_page' => -1,
-                    'orderby' => 'menu_order',
-                    'order' => 'ASC'
-                ));
-            }
-        } else {
-            // Get post categories
-            $categories = wp_get_post_categories($post_id);
-            
-            if (!empty($categories)) {
-                // Get CTAs that target these categories
-                $args = array(
-                    'post_type' => 'nova_cta',
-                    'posts_per_page' => -1,
-                    'orderby' => 'menu_order',
-                    'order' => 'ASC',
-                    'meta_query' => array(
-                        'relation' => 'OR'
-                    )
-                );
-
-                // Add each category to the meta query
-                foreach ($categories as $cat_id) {
-                    $args['meta_query'][] = array(
-                        'key' => '_nova_cta_settings',
-                        'value' => sprintf('"display_categories":[%d]', $cat_id),
-                        'compare' => 'LIKE'
-                    );
-                }
-
-                $ctas = get_posts($args);
-            }
-        }
-
-        return $ctas;
+        return implode('</p>', $paragraphs);
     }
 
     public function add_cta_meta_boxes() {
@@ -808,70 +783,57 @@ class Nova_CTA_Manager {
     }
 
     public function render_relationship_settings($post) {
+        wp_nonce_field('nova_cta_editor', 'nova_cta_editor_nonce');
         $settings = get_post_meta($post->ID, '_nova_cta_settings', true);
-        $selected_cats = isset($settings['display_categories']) ? $settings['display_categories'] : array();
+        $display_categories = isset($settings['display_categories']) ? (array)$settings['display_categories'] : array();
+        $pillar_page = isset($settings['pillar_page']) ? $settings['pillar_page'] : '';
         ?>
-        <div class="nova-relationship-settings">
-            <p><strong><?php _e('Display in Categories', 'nova-ctas'); ?></strong></p>
-            <p class="description"><?php _e('Select which post categories this CTA should appear in.', 'nova-ctas'); ?></p>
-            
-            <div class="nova-categories">
-                <?php
-                $categories = get_categories(array('hide_empty' => false));
+        <div class="nova-field-group">
+            <h3><?php _e('Display in Categories', 'nova-ctas'); ?></h3>
+            <p class="description"><?php _e('Select which post categories this CTA should appear in:', 'nova-ctas'); ?></p>
+            <?php
+            $categories = get_categories(array('hide_empty' => false));
+            if ($categories) {
+                echo '<div class="nova-categories-list">';
                 foreach ($categories as $category) {
-                    ?>
-                    <p>
-                        <label>
-                            <input type="checkbox" name="nova_cta_settings[display_categories][]" 
-                                   value="<?php echo esc_attr($category->term_id); ?>"
-                                   <?php checked(in_array($category->term_id, $selected_cats)); ?>>
-                            <?php echo esc_html($category->name); ?>
-                        </label>
-                    </p>
-                    <?php
+                    printf(
+                        '<label><input type="checkbox" name="nova_cta_settings[display_categories][]" value="%d" %s> %s</label>',
+                        $category->term_id,
+                        checked(in_array($category->term_id, $display_categories), true, false),
+                        esc_html($category->name)
+                    );
                 }
-                ?>
-            </div>
-
-            <p><strong><?php _e('Link to Pillar Page', 'nova-ctas'); ?></strong></p>
-            <p class="description"><?php _e('Select which pillar page this CTA should link to.', 'nova-ctas'); ?></p>
-            
-            <div class="nova-pillar-page">
-                <?php
-                // Get all pages (not just pillar pages)
-                $pages = get_pages(array(
-                    'post_status' => 'publish'
-                ));
-                ?>
-                <select name="nova_cta_settings[pillar_page]" id="nova_cta_pillar_page">
-                    <option value=""><?php _e('Select a Page', 'nova-ctas'); ?></option>
-                    <?php foreach ($pages as $page) : ?>
-                        <option value="<?php echo esc_attr($page->ID); ?>" 
-                                <?php selected(isset($settings['pillar_page']) ? $settings['pillar_page'] : '', $page->ID); ?>
-                                data-url="<?php echo esc_url(get_permalink($page->ID)); ?>">
-                            <?php echo esc_html($page->post_title); ?>
-                            <?php 
-                            // Show "(Pillar Page)" next to pages marked as pillar pages
-                            if (get_post_meta($page->ID, '_is_pillar_page', true)) {
-                                echo ' ' . esc_html__('(Pillar Page)', 'nova-ctas');
-                            }
-                            ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+                echo '</div>';
+            }
+            ?>
         </div>
 
-        <script>
-        jQuery(document).ready(function($) {
-            // Auto-fill button URL when pillar page is selected
-            $('#nova_cta_pillar_page').on('change', function() {
-                var selectedOption = $(this).find('option:selected');
-                var url = selectedOption.data('url');
-                $('input[name="nova_cta_settings[button_url]"]').val(url);
-            });
-        });
-        </script>
+        <div class="nova-field-group">
+            <h3><?php _e('Link to Page', 'nova-ctas'); ?></h3>
+            <p class="description"><?php _e('Select which page this CTA should link to:', 'nova-ctas'); ?></p>
+            <?php
+            $pages = get_pages(array('sort_column' => 'menu_order,post_title'));
+            if ($pages) {
+                echo '<select name="nova_cta_settings[pillar_page]" class="widefat">';
+                echo '<option value="">' . __('Select a page...', 'nova-ctas') . '</option>';
+                foreach ($pages as $page) {
+                    $is_pillar = get_post_meta($page->ID, '_is_pillar_page', true);
+                    $title = $page->post_title;
+                    if ($is_pillar) {
+                        $title .= ' ' . __('(Pillar Page)', 'nova-ctas');
+                    }
+                    printf(
+                        '<option value="%d" %s>%s</option>',
+                        $page->ID,
+                        selected($pillar_page, $page->ID, false),
+                        esc_html($title)
+                    );
+                }
+                echo '</select>';
+            }
+            ?>
+        </div>
         <?php
     }
+} 
 } 
