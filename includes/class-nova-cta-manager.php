@@ -691,96 +691,110 @@ class Nova_CTA_Manager {
     }
 
     private function build_cta_html($cta, $atts = array()) {
-        if (!$cta || !is_object($cta) || $cta->post_type !== 'nova_cta') {
-            return '';
-        }
-
-        // Get settings with defaults
-        $settings = get_post_meta($cta->ID, '_nova_cta_settings', true);
-        if (!is_array($settings)) {
-            $settings = array();
-        }
-
-        // Get design settings with defaults
-        $design = get_post_meta($cta->ID, '_nova_cta_design', true);
-        if (!is_array($design)) {
-            $design = array();
-        }
-        
-        // Merge shortcode attributes with saved settings
-        $design = wp_parse_args($atts, $design);
-        
-        // Get button settings with defaults
-        $button_text = isset($settings['button_text']) ? $settings['button_text'] : '';
-        $button_url = isset($settings['button_url']) ? $settings['button_url'] : '';
-        if (!empty($settings['pillar_page'])) {
-            $button_url = get_permalink($settings['pillar_page']);
-        }
-        $button_target = isset($settings['button_target']) ? $settings['button_target'] : '_self';
-        
-        // Get design settings with defaults
-        $bg_color = isset($design['bg_color']) ? $design['bg_color'] : '#f8f9fa';
-        $title_color = isset($design['title_color']) ? $design['title_color'] : '#212529';
-        $body_color = isset($design['body_color']) ? $design['body_color'] : '#212529';
-        $button_style = isset($design['button_style']) ? $design['button_style'] : 'default';
-        $layout = isset($design['layout']) ? $design['layout'] : 'standard';
-        
-        // Build CSS classes
-        $classes = array(
-            'nova-cta',
-            'nova-cta-' . sanitize_html_class($layout),
-            'nova-cta-button-' . sanitize_html_class($button_style)
-        );
-
-        // Build inline styles
-        $styles = array();
-        
-        // Background styles
-        if (!empty($bg_color)) {
-            $styles[] = 'background-color: ' . esc_attr($bg_color);
-        }
-        
-        // Background image
-        if (!empty($design['bg_image'])) {
-            $bg_url = wp_get_attachment_url($design['bg_image']);
-            if ($bg_url) {
-                $styles[] = 'background-image: url(' . esc_url($bg_url) . ')';
-                $styles[] = 'background-position: ' . esc_attr($design['bg_position'] ?? 'center center');
-                $styles[] = 'background-size: ' . esc_attr($design['bg_size'] ?? 'cover');
-            }
-        }
-
-        // Box design
-        if (!empty($design['border_radius'])) {
-            $styles[] = 'border-radius: ' . esc_attr($design['border_radius']) . 'px';
-        }
-        
-        // Padding
-        $padding_top = isset($design['padding_top']) ? absint($design['padding_top']) : 30;
-        $padding_right = isset($design['padding_right']) ? absint($design['padding_right']) : 30;
-        $padding_bottom = isset($design['padding_bottom']) ? absint($design['padding_bottom']) : 30;
-        $padding_left = isset($design['padding_left']) ? absint($design['padding_left']) : 30;
-        $styles[] = sprintf('padding: %dpx %dpx %dpx %dpx', $padding_top, $padding_right, $padding_bottom, $padding_left);
-
-        // Margin
-        $margin_top = isset($design['margin_top']) ? absint($design['margin_top']) : 60;
-        $margin_right = isset($design['margin_right']) ? absint($design['margin_right']) : 0;
-        $margin_bottom = isset($design['margin_bottom']) ? absint($design['margin_bottom']) : 60;
-        $margin_left = isset($design['margin_left']) ? absint($design['margin_left']) : 0;
-        $styles[] = sprintf('margin: %dpx %dpx %dpx %dpx', $margin_top, $margin_right, $margin_bottom, $margin_left);
-        
-        // Start building HTML with error handling
         try {
+            // Validate CTA object
+            if (!$cta || !is_object($cta) || $cta->post_type !== 'nova_cta') {
+                return '';
+            }
+
+            // Get and validate settings
+            $settings = get_post_meta($cta->ID, '_nova_cta_settings', true);
+            $settings = is_array($settings) ? $settings : array();
+
+            // Get and validate design settings
+            $design = get_post_meta($cta->ID, '_nova_cta_design', true);
+            $design = is_array($design) ? $design : array();
+            
+            // Merge shortcode attributes with saved settings
+            $design = wp_parse_args($atts, $design);
+            
+            // Get button settings with defaults
+            $button_text = isset($settings['button_text']) ? $settings['button_text'] : '';
+            $button_url = '';
+            
+            // Handle button URL with pillar page fallback
+            if (!empty($settings['pillar_page'])) {
+                $button_url = get_permalink($settings['pillar_page']);
+            } elseif (!empty($settings['button_url'])) {
+                $button_url = $settings['button_url'];
+            }
+            
+            if (empty($button_url)) {
+                $button_url = '#';
+            }
+            
+            $button_target = isset($settings['button_target']) ? $settings['button_target'] : '_self';
+            
+            // Build CSS classes
+            $classes = array(
+                'nova-cta',
+                'nova-cta-' . sanitize_html_class($design['layout'] ?? 'standard'),
+                'nova-cta-button-' . sanitize_html_class($design['button_style'] ?? 'default')
+            );
+
+            // Build inline styles array
+            $styles = array();
+            
+            // Background styles
+            if (!empty($design['bg_color'])) {
+                $styles[] = 'background-color: ' . esc_attr($design['bg_color']);
+            }
+            
+            // Background image with validation
+            if (!empty($design['bg_image'])) {
+                $bg_url = wp_get_attachment_url($design['bg_image']);
+                if ($bg_url) {
+                    $styles[] = 'background-image: url(' . esc_url($bg_url) . ')';
+                    $styles[] = 'background-position: ' . esc_attr($design['bg_position'] ?? 'center center');
+                    $styles[] = 'background-size: ' . esc_attr($design['bg_size'] ?? 'cover');
+                }
+            }
+
+            // Box design with validation
+            $border_radius = isset($design['border_radius']) ? absint($design['border_radius']) : 0;
+            if ($border_radius > 0) {
+                $styles[] = 'border-radius: ' . $border_radius . 'px';
+            }
+            
+            // Padding with validation
+            $padding = array(
+                'top' => isset($design['padding_top']) ? absint($design['padding_top']) : 30,
+                'right' => isset($design['padding_right']) ? absint($design['padding_right']) : 30,
+                'bottom' => isset($design['padding_bottom']) ? absint($design['padding_bottom']) : 30,
+                'left' => isset($design['padding_left']) ? absint($design['padding_left']) : 30
+            );
+            $styles[] = sprintf('padding: %dpx %dpx %dpx %dpx', 
+                $padding['top'], 
+                $padding['right'], 
+                $padding['bottom'], 
+                $padding['left']
+            );
+
+            // Margin with validation
+            $margin = array(
+                'top' => isset($design['margin_top']) ? absint($design['margin_top']) : 60,
+                'right' => isset($design['margin_right']) ? absint($design['margin_right']) : 0,
+                'bottom' => isset($design['margin_bottom']) ? absint($design['margin_bottom']) : 60,
+                'left' => isset($design['margin_left']) ? absint($design['margin_left']) : 0
+            );
+            $styles[] = sprintf('margin: %dpx %dpx %dpx %dpx', 
+                $margin['top'], 
+                $margin['right'], 
+                $margin['bottom'], 
+                $margin['left']
+            );
+
+            // Build HTML with proper escaping
             $html = sprintf(
                 '<div class="%s" style="%s">',
                 esc_attr(implode(' ', array_filter($classes))),
                 esc_attr(implode('; ', array_filter($styles)))
             );
             
-            // Add content wrapper with styles
+            // Content wrapper with typography settings
             $content_styles = array();
-            if (!empty($body_color)) {
-                $content_styles[] = 'color: ' . esc_attr($body_color);
+            if (!empty($design['body_color'])) {
+                $content_styles[] = 'color: ' . esc_attr($design['body_color']);
             }
             if (!empty($design['body_font_size'])) {
                 $content_styles[] = 'font-size: ' . esc_attr($design['body_font_size']);
@@ -794,11 +808,14 @@ class Nova_CTA_Manager {
                 esc_attr(implode('; ', array_filter($content_styles)))
             );
 
-            // Add the content
-            $html .= apply_filters('the_content', $cta->post_content);
+            // Add content with proper filtering
+            $content = apply_filters('the_content', $cta->post_content);
+            if (!empty($content)) {
+                $html .= wp_kses_post($content);
+            }
 
-            // Add button if we have text and URL
-            if ($button_text && $button_url) {
+            // Add button if we have text
+            if (!empty($button_text)) {
                 $html .= sprintf(
                     '<a href="%s" target="%s" class="nova-button">%s</a>',
                     esc_url($button_url),
@@ -807,119 +824,122 @@ class Nova_CTA_Manager {
                 );
             }
 
-            $html .= '</div>'; // Close content wrapper
-            $html .= '</div>'; // Close main wrapper
+            $html .= '</div></div>';
 
             return $html;
+            
         } catch (Exception $e) {
-            // Log error and return empty string if something goes wrong
-            error_log('Nova CTAs Error: ' . $e->getMessage());
+            error_log('Nova CTAs Error in build_cta_html: ' . $e->getMessage());
             return '';
         }
     }
 
     public function maybe_insert_cta($content) {
-        // Don't modify content in admin or if not in the main query
-        if (is_admin() || !in_the_loop() || !is_main_query()) {
+        try {
+            // Don't modify content in admin or if not in the main query
+            if (is_admin() || !in_the_loop() || !is_main_query()) {
+                return $content;
+            }
+
+            // Get post categories
+            $post_id = get_the_ID();
+            if (!$post_id) {
+                return $content;
+            }
+
+            $post_categories = wp_get_post_categories($post_id);
+            if (empty($post_categories)) {
+                return $content;
+            }
+
+            // Get all CTAs
+            $ctas = get_posts(array(
+                'post_type' => 'nova_cta',
+                'posts_per_page' => -1,
+                'post_status' => 'publish',
+                'fields' => 'ids'
+            ));
+
+            if (empty($ctas)) {
+                return $content;
+            }
+
+            // Split content into paragraphs safely
+            $paragraphs = preg_split('/<\/?p>/', $content);
+            $paragraphs = array_filter($paragraphs, function($p) {
+                return !empty(trim($p));
+            });
+            $total_paragraphs = count($paragraphs);
+
+            if ($total_paragraphs === 0) {
+                return $content;
+            }
+
+            foreach ($ctas as $cta_id) {
+                // Get and validate settings
+                $settings = get_post_meta($cta_id, '_nova_cta_settings', true);
+                if (!is_array($settings) || empty($settings['display_categories'])) {
+                    continue;
+                }
+
+                $display_categories = (array)$settings['display_categories'];
+                
+                // Check for matching categories
+                $matching_categories = array_intersect($post_categories, $display_categories);
+                if (empty($matching_categories)) {
+                    continue;
+                }
+
+                // Get and validate display settings
+                $display = get_post_meta($cta_id, '_nova_cta_display', true);
+                $display = is_array($display) ? $display : array();
+                
+                $first_position = isset($display['first_position']) ? absint($display['first_position']) : 30;
+                $show_end = isset($display['show_end']) ? (bool)$display['show_end'] : true;
+
+                // Calculate safe insert position
+                $insert_position = max(1, min($total_paragraphs - 1, floor(($total_paragraphs * $first_position) / 100)));
+                
+                if ($show_end && $insert_position > ($total_paragraphs - 3)) {
+                    $insert_position = floor($total_paragraphs / 2);
+                }
+
+                // Get CTA content
+                $cta = get_post($cta_id);
+                if (!$cta || $cta->post_type !== 'nova_cta') {
+                    continue;
+                }
+
+                $cta_html = $this->build_cta_html($cta);
+                if (empty($cta_html)) {
+                    continue;
+                }
+
+                // Insert CTA at calculated position
+                if ($insert_position > 0 && $insert_position < $total_paragraphs) {
+                    $paragraphs[$insert_position] .= $cta_html;
+                }
+
+                // Add CTA at the end if enabled
+                if ($show_end) {
+                    $paragraphs[] = $cta_html;
+                }
+            }
+
+            // Rebuild content safely
+            $modified_content = '';
+            foreach ($paragraphs as $p) {
+                if (!empty(trim($p))) {
+                    $modified_content .= '<p>' . trim($p) . '</p>';
+                }
+            }
+
+            return $modified_content;
+
+        } catch (Exception $e) {
+            error_log('Nova CTAs Error in maybe_insert_cta: ' . $e->getMessage());
             return $content;
         }
-
-        // Get post categories
-        $post_id = get_the_ID();
-        if (!$post_id) {
-            return $content;
-        }
-
-        $post_categories = wp_get_post_categories($post_id);
-        if (empty($post_categories)) {
-            return $content;
-        }
-
-        // Get all CTAs
-        $ctas = get_posts(array(
-            'post_type' => 'nova_cta',
-            'posts_per_page' => -1,
-            'post_status' => 'publish',
-            'fields' => 'ids' // Only get post IDs for better performance
-        ));
-
-        if (empty($ctas)) {
-            return $content;
-        }
-
-        $matching_ctas = array();
-        foreach ($ctas as $cta_id) {
-            $settings = get_post_meta($cta_id, '_nova_cta_settings', true);
-            if (!is_array($settings) || empty($settings['display_categories'])) {
-                continue;
-            }
-
-            $display_categories = (array)$settings['display_categories'];
-            
-            // Check if this CTA should be displayed in any of the post's categories
-            $matching_categories = array_intersect($post_categories, $display_categories);
-            if (!empty($matching_categories)) {
-                $matching_ctas[] = $cta_id;
-            }
-        }
-
-        if (empty($matching_ctas)) {
-            return $content;
-        }
-
-        // Only process content if we have matches
-        $paragraphs = preg_split('/<\/?p>/', $content);
-        $paragraphs = array_filter($paragraphs); // Remove empty elements
-        $total_paragraphs = count($paragraphs);
-
-        if ($total_paragraphs === 0) {
-            return $content; // Return original content if no paragraphs
-        }
-
-        foreach ($matching_ctas as $cta_id) {
-            $display = get_post_meta($cta_id, '_nova_cta_display', true);
-            if (!is_array($display)) {
-                continue;
-            }
-            
-            // Get position settings with safe defaults
-            $first_position = isset($display['first_position']) ? absint($display['first_position']) : 30;
-            $show_end = isset($display['show_end']) ? (bool)$display['show_end'] : true;
-
-            // Calculate position to insert CTA
-            $insert_position = max(1, min($total_paragraphs - 1, floor(($total_paragraphs * $first_position) / 100)));
-            
-            // Ensure we don't insert too close to the end if showing at end
-            if ($show_end && $insert_position > ($total_paragraphs - 3)) {
-                $insert_position = floor($total_paragraphs / 2);
-            }
-
-            // Get CTA post object
-            $cta = get_post($cta_id);
-            if (!$cta || $cta->post_type !== 'nova_cta') {
-                continue;
-            }
-
-            // Insert CTA at calculated position
-            if ($insert_position > 0 && $insert_position < $total_paragraphs) {
-                $paragraphs[$insert_position] .= $this->build_cta_html($cta);
-            }
-
-            // Add CTA at the end if enabled
-            if ($show_end) {
-                $paragraphs[] = $this->build_cta_html($cta);
-            }
-        }
-
-        // Rebuild content with proper paragraph tags
-        $modified_content = '';
-        foreach ($paragraphs as $p) {
-            if (!empty($p)) {
-                $modified_content .= '<p>' . trim($p) . '</p>';
-            }
-        }
-
-        return $modified_content;
     }
 
     public function render_relationship_settings($post) {
