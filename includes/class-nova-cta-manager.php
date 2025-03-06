@@ -691,91 +691,131 @@ class Nova_CTA_Manager {
     }
 
     private function build_cta_html($cta, $atts = array()) {
+        if (!$cta || !is_object($cta) || $cta->post_type !== 'nova_cta') {
+            return '';
+        }
+
+        // Get settings with defaults
         $settings = get_post_meta($cta->ID, '_nova_cta_settings', true);
+        if (!is_array($settings)) {
+            $settings = array();
+        }
+
+        // Get design settings with defaults
         $design = get_post_meta($cta->ID, '_nova_cta_design', true);
+        if (!is_array($design)) {
+            $design = array();
+        }
         
         // Merge shortcode attributes with saved settings
         $design = wp_parse_args($atts, $design);
         
-        // Get button settings
+        // Get button settings with defaults
         $button_text = isset($settings['button_text']) ? $settings['button_text'] : '';
         $button_url = isset($settings['button_url']) ? $settings['button_url'] : '';
+        if (!empty($settings['pillar_page'])) {
+            $button_url = get_permalink($settings['pillar_page']);
+        }
         $button_target = isset($settings['button_target']) ? $settings['button_target'] : '_self';
         
-        // Get design settings
+        // Get design settings with defaults
         $bg_color = isset($design['bg_color']) ? $design['bg_color'] : '#f8f9fa';
-        $text_color = isset($design['text_color']) ? $design['text_color'] : '#212529';
+        $title_color = isset($design['title_color']) ? $design['title_color'] : '#212529';
+        $body_color = isset($design['body_color']) ? $design['body_color'] : '#212529';
         $button_style = isset($design['button_style']) ? $design['button_style'] : 'default';
         $layout = isset($design['layout']) ? $design['layout'] : 'standard';
         
         // Build CSS classes
         $classes = array(
             'nova-cta',
-            'nova-cta-' . $layout,
-            'nova-cta-button-' . $button_style
+            'nova-cta-' . sanitize_html_class($layout),
+            'nova-cta-button-' . sanitize_html_class($button_style)
         );
-        
+
         // Build inline styles
-        $styles = array(
-            'background-color: ' . esc_attr($bg_color),
-            'color: ' . esc_attr($text_color)
-        );
+        $styles = array();
         
-        // Start building HTML
-        $html = sprintf(
-            '<div class="%s" style="%s">',
-            esc_attr(implode(' ', $classes)),
-            esc_attr(implode('; ', $styles))
-        );
-        
-        // Add content based on layout
-        switch ($layout) {
-            case 'split':
-                $html .= '<div class="nova-cta-content">';
-                $html .= apply_filters('the_content', $cta->post_content);
-                $html .= '</div>';
-                $html .= '<div class="nova-cta-button">';
-                if ($button_text && $button_url) {
-                    $html .= sprintf(
-                        '<a href="%s" target="%s" class="nova-button">%s</a>',
-                        esc_url($button_url),
-                        esc_attr($button_target),
-                        esc_html($button_text)
-                    );
-                }
-                $html .= '</div>';
-                break;
-                
-            case 'centered':
-                $html .= '<div class="nova-cta-content">';
-                $html .= apply_filters('the_content', $cta->post_content);
-                if ($button_text && $button_url) {
-                    $html .= sprintf(
-                        '<a href="%s" target="%s" class="nova-button">%s</a>',
-                        esc_url($button_url),
-                        esc_attr($button_target),
-                        esc_html($button_text)
-                    );
-                }
-                $html .= '</div>';
-                break;
-                
-            default: // standard
-                $html .= apply_filters('the_content', $cta->post_content);
-                if ($button_text && $button_url) {
-                    $html .= sprintf(
-                        '<a href="%s" target="%s" class="nova-button">%s</a>',
-                        esc_url($button_url),
-                        esc_attr($button_target),
-                        esc_html($button_text)
-                    );
-                }
-                break;
+        // Background styles
+        if (!empty($bg_color)) {
+            $styles[] = 'background-color: ' . esc_attr($bg_color);
         }
         
-        $html .= '</div>';
+        // Background image
+        if (!empty($design['bg_image'])) {
+            $bg_url = wp_get_attachment_url($design['bg_image']);
+            if ($bg_url) {
+                $styles[] = 'background-image: url(' . esc_url($bg_url) . ')';
+                $styles[] = 'background-position: ' . esc_attr($design['bg_position'] ?? 'center center');
+                $styles[] = 'background-size: ' . esc_attr($design['bg_size'] ?? 'cover');
+            }
+        }
+
+        // Box design
+        if (!empty($design['border_radius'])) {
+            $styles[] = 'border-radius: ' . esc_attr($design['border_radius']) . 'px';
+        }
         
-        return $html;
+        // Padding
+        $padding_top = isset($design['padding_top']) ? absint($design['padding_top']) : 30;
+        $padding_right = isset($design['padding_right']) ? absint($design['padding_right']) : 30;
+        $padding_bottom = isset($design['padding_bottom']) ? absint($design['padding_bottom']) : 30;
+        $padding_left = isset($design['padding_left']) ? absint($design['padding_left']) : 30;
+        $styles[] = sprintf('padding: %dpx %dpx %dpx %dpx', $padding_top, $padding_right, $padding_bottom, $padding_left);
+
+        // Margin
+        $margin_top = isset($design['margin_top']) ? absint($design['margin_top']) : 60;
+        $margin_right = isset($design['margin_right']) ? absint($design['margin_right']) : 0;
+        $margin_bottom = isset($design['margin_bottom']) ? absint($design['margin_bottom']) : 60;
+        $margin_left = isset($design['margin_left']) ? absint($design['margin_left']) : 0;
+        $styles[] = sprintf('margin: %dpx %dpx %dpx %dpx', $margin_top, $margin_right, $margin_bottom, $margin_left);
+        
+        // Start building HTML with error handling
+        try {
+            $html = sprintf(
+                '<div class="%s" style="%s">',
+                esc_attr(implode(' ', array_filter($classes))),
+                esc_attr(implode('; ', array_filter($styles)))
+            );
+            
+            // Add content wrapper with styles
+            $content_styles = array();
+            if (!empty($body_color)) {
+                $content_styles[] = 'color: ' . esc_attr($body_color);
+            }
+            if (!empty($design['body_font_size'])) {
+                $content_styles[] = 'font-size: ' . esc_attr($design['body_font_size']);
+            }
+            if (!empty($design['body_font_weight'])) {
+                $content_styles[] = 'font-weight: ' . esc_attr($design['body_font_weight']);
+            }
+
+            $html .= sprintf(
+                '<div class="nova-cta-content" style="%s">',
+                esc_attr(implode('; ', array_filter($content_styles)))
+            );
+
+            // Add the content
+            $html .= apply_filters('the_content', $cta->post_content);
+
+            // Add button if we have text and URL
+            if ($button_text && $button_url) {
+                $html .= sprintf(
+                    '<a href="%s" target="%s" class="nova-button">%s</a>',
+                    esc_url($button_url),
+                    esc_attr($button_target),
+                    esc_html($button_text)
+                );
+            }
+
+            $html .= '</div>'; // Close content wrapper
+            $html .= '</div>'; // Close main wrapper
+
+            return $html;
+        } catch (Exception $e) {
+            // Log error and return empty string if something goes wrong
+            error_log('Nova CTAs Error: ' . $e->getMessage());
+            return '';
+        }
     }
 
     public function maybe_insert_cta($content) {
