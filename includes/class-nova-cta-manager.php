@@ -125,9 +125,13 @@ class Nova_CTA_Manager {
             return;
         }
         
+        error_log('Nova CTAs: Rendering admin page for post ID: ' . $post->ID);
+        
         $settings = get_post_meta($post->ID, '_nova_cta_settings', true);
         $design = get_post_meta($post->ID, '_nova_cta_design', true);
         $display = get_post_meta($post->ID, '_nova_cta_display', true);
+        
+        error_log('Nova CTAs: Current design settings: ' . print_r($design, true));
         
         // Default values
         $content = $post->post_content;
@@ -135,6 +139,10 @@ class Nova_CTA_Manager {
         $button_target = isset($settings['button_target']) ? $settings['button_target'] : '_self';
         $display_categories = isset($settings['display_categories']) ? (array)$settings['display_categories'] : array();
         $pillar_page = isset($settings['pillar_page']) ? $settings['pillar_page'] : '';
+        
+        // Create and verify nonce
+        $nonce = wp_create_nonce('nova_cta_editor');
+        error_log('Nova CTAs: Created nonce for editor: ' . $nonce);
         
         wp_nonce_field('nova_cta_editor', 'nova_cta_editor_nonce');
         ?>
@@ -539,6 +547,20 @@ class Nova_CTA_Manager {
     }
 
     public function save_cta_data($post_id) {
+        error_log('Nova CTAs: save_cta_data method called for post ID: ' . $post_id);
+        error_log('Nova CTAs: POST data available: ' . (isset($_POST) ? 'yes' : 'no'));
+        error_log('Nova CTAs: REQUEST_METHOD: ' . $_SERVER['REQUEST_METHOD']);
+        
+        if (isset($_POST)) {
+            error_log('Nova CTAs: POST keys present: ' . implode(', ', array_keys($_POST)));
+        }
+        
+        // Check for nonce
+        error_log('Nova CTAs: Nonce present: ' . (isset($_POST['nova_cta_editor_nonce']) ? 'yes' : 'no'));
+        if (isset($_POST['nova_cta_editor_nonce'])) {
+            error_log('Nova CTAs: Nonce verification result: ' . (wp_verify_nonce($_POST['nova_cta_editor_nonce'], 'nova_cta_editor') ? 'valid' : 'invalid'));
+        }
+
         // Early return if this is an autosave
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
             error_log('Nova CTAs: Skipping save - autosave detected');

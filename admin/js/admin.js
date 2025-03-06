@@ -155,12 +155,20 @@
             mediaUploader.open();
         });
 
-        // Form submission
-        $('#post').on('submit', function() {
-            // Ensure TinyMCE content is saved
-            if (typeof tinyMCE !== 'undefined') {
-                tinyMCE.triggerSave();
+        // Log when form is about to submit
+        $('form#post').on('submit', function(e) {
+            console.log('Nova CTAs: Form submission detected');
+            
+            // Log form data
+            var formData = new FormData(this);
+            for (var pair of formData.entries()) {
+                if (pair[0].includes('nova_cta_design')) {
+                    console.log('Nova CTAs: Form field - ' + pair[0] + ': ' + pair[1]);
+                }
             }
+            
+            // Log nonce
+            console.log('Nova CTAs: Nonce present:', formData.has('nova_cta_editor_nonce'));
         });
     });
 
