@@ -4,6 +4,8 @@ if (!defined('ABSPATH')) {
 }
 
 class Nova_CTA_Manager {
+    private $is_processing_cta = false;
+
     public function __construct() {
         // Register post type immediately if not already registered
         if (!post_type_exists('nova_cta')) {
@@ -821,9 +823,32 @@ class Nova_CTA_Manager {
             );
 
             // Add content with proper filtering
-            $content = apply_filters('the_content', $cta->post_content);
+            $content = $cta->post_content;
             if (!empty($content)) {
-                $html .= wp_kses_post($content);
+                // Use a basic subset of allowed HTML tags instead of full content filtering
+                $allowed_html = array(
+                    'p' => array(),
+                    'br' => array(),
+                    'strong' => array(),
+                    'em' => array(),
+                    'span' => array('class' => array()),
+                    'h1' => array(),
+                    'h2' => array(),
+                    'h3' => array(),
+                    'h4' => array(),
+                    'h5' => array(),
+                    'h6' => array(),
+                    'ul' => array(),
+                    'ol' => array(),
+                    'li' => array(),
+                    'a' => array(
+                        'href' => array(),
+                        'title' => array(),
+                        'target' => array(),
+                        'class' => array()
+                    )
+                );
+                $html .= wp_kses($content, $allowed_html);
             }
 
             // Add button if we have text
@@ -849,7 +874,14 @@ class Nova_CTA_Manager {
     }
 
     public function maybe_insert_cta($content) {
+        // Prevent recursive calls
+        if ($this->is_processing_cta) {
+            return $content;
+        }
+
         try {
+            $this->is_processing_cta = true;
+
             // Enable error reporting
             error_reporting(E_ALL);
             ini_set('display_errors', 0);
@@ -861,6 +893,7 @@ class Nova_CTA_Manager {
             // Don't modify content in admin or if not in the main query
             if (is_admin() || !in_the_loop() || !is_main_query()) {
                 error_log('Nova CTAs: Skipping CTA insertion - not in main query or in admin');
+                $this->is_processing_cta = false;
                 return $content;
             }
 
@@ -1006,15 +1039,18 @@ class Nova_CTA_Manager {
                     }
                 }
                 error_log('Nova CTAs: Successfully rebuilt content with CTAs');
+                $this->is_processing_cta = false;
                 return $modified_content;
             } catch (Exception $e) {
                 error_log('Nova CTAs: Error rebuilding content: ' . $e->getMessage());
+                $this->is_processing_cta = false;
                 return $content;
             }
 
         } catch (Exception $e) {
             error_log('Nova CTAs Critical Error: ' . $e->getMessage());
             error_log('Nova CTAs Stack Trace: ' . $e->getTraceAsString());
+            $this->is_processing_cta = false;
             return $content;
         }
     }
