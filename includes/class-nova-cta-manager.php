@@ -805,6 +805,24 @@ class Nova_CTA_Manager {
                 esc_attr(implode('; ', array_filter($styles)))
             );
             
+            // Add title with typography settings
+            $title_styles = array();
+            if (!empty($design['title_color'])) {
+                $title_styles[] = 'color: ' . esc_attr($design['title_color']);
+            }
+            if (!empty($design['title_font_size'])) {
+                $title_styles[] = 'font-size: ' . esc_attr($design['title_font_size']);
+            }
+            if (!empty($design['title_font_weight'])) {
+                $title_styles[] = 'font-weight: ' . esc_attr($design['title_font_weight']);
+            }
+
+            $html .= sprintf(
+                '<h3 class="nova-cta-title" style="%s">%s</h3>',
+                esc_attr(implode('; ', array_filter($title_styles))),
+                esc_html($cta->post_title)
+            );
+            
             // Content wrapper with typography settings
             $content_styles = array();
             if (!empty($design['body_color'])) {
@@ -882,17 +900,8 @@ class Nova_CTA_Manager {
         try {
             $this->is_processing_cta = true;
 
-            // Enable error reporting
-            error_reporting(E_ALL);
-            ini_set('display_errors', 0);
-            ini_set('log_errors', 1);
-
-            // Log the start of CTA insertion
-            error_log('Nova CTAs: Starting CTA insertion process');
-
             // Don't modify content in admin or if not in the main query
             if (is_admin() || !in_the_loop() || !is_main_query()) {
-                error_log('Nova CTAs: Skipping CTA insertion - not in main query or in admin');
                 $this->is_processing_cta = false;
                 return $content;
             }
@@ -900,152 +909,115 @@ class Nova_CTA_Manager {
             // Get post categories
             $post_id = get_the_ID();
             if (!$post_id) {
-                error_log('Nova CTAs: No post ID found');
+                $this->is_processing_cta = false;
                 return $content;
             }
-
-            error_log('Nova CTAs: Processing post ID: ' . $post_id);
 
             $post_categories = wp_get_post_categories($post_id);
             if (empty($post_categories)) {
-                error_log('Nova CTAs: No categories found for post ID: ' . $post_id);
+                $this->is_processing_cta = false;
                 return $content;
             }
-
-            error_log('Nova CTAs: Found categories: ' . implode(', ', $post_categories));
 
             // Get all CTAs
             $ctas = get_posts(array(
                 'post_type' => 'nova_cta',
                 'posts_per_page' => -1,
-                'post_status' => 'publish',
-                'fields' => 'ids'
+                'post_status' => 'publish'
             ));
 
             if (empty($ctas)) {
-                error_log('Nova CTAs: No CTAs found');
+                $this->is_processing_cta = false;
                 return $content;
             }
 
-            error_log('Nova CTAs: Found ' . count($ctas) . ' CTAs');
-
-            // Split content into paragraphs safely
-            $paragraphs = preg_split('/<\/?p>/', $content);
-            if ($paragraphs === false) {
-                error_log('Nova CTAs: Error splitting content into paragraphs');
-                return $content;
-            }
-
+            // Split content into paragraphs and clean up
+            $paragraphs = preg_split('/<\/p>/', $content);
+            $paragraphs = array_map('trim', $paragraphs);
             $paragraphs = array_filter($paragraphs, function($p) {
-                return !empty(trim($p));
+                return !empty($p);
             });
+            
+            // Reset array keys to ensure sequential numbering
+            $paragraphs = array_values($paragraphs);
             $total_paragraphs = count($paragraphs);
 
-            error_log('Nova CTAs: Found ' . $total_paragraphs . ' paragraphs');
-
             if ($total_paragraphs === 0) {
-                error_log('Nova CTAs: No paragraphs found in content');
+                $this->is_processing_cta = false;
                 return $content;
             }
 
-            foreach ($ctas as $cta_id) {
-                error_log('Nova CTAs: Processing CTA ID: ' . $cta_id);
+            $modified_content = '';
+            $inserted_ctas = array();
 
-                // Get and validate settings
-                $settings = get_post_meta($cta_id, '_nova_cta_settings', true);
-                if (!is_array($settings)) {
-                    error_log('Nova CTAs: Invalid settings for CTA ID: ' . $cta_id);
-                    continue;
-                }
-
-                if (empty($settings['display_categories'])) {
-                    error_log('Nova CTAs: No display categories set for CTA ID: ' . $cta_id);
+            // Process each CTA and determine insertion points
+            foreach ($ctas as $cta) {
+                $settings = get_post_meta($cta->ID, '_nova_cta_settings', true);
+                if (!is_array($settings) || empty($settings['display_categories'])) {
                     continue;
                 }
 
                 $display_categories = (array)$settings['display_categories'];
-                
-                // Check for matching categories
-                $matching_categories = array_intersect($post_categories, $display_categories);
-                if (empty($matching_categories)) {
-                    error_log('Nova CTAs: No matching categories for CTA ID: ' . $cta_id);
+                if (!array_intersect($post_categories, $display_categories)) {
                     continue;
                 }
 
-                error_log('Nova CTAs: Found matching categories for CTA ID: ' . $cta_id);
-
-                // Get and validate display settings
-                $display = get_post_meta($cta_id, '_nova_cta_display', true);
+                $display = get_post_meta($cta->ID, '_nova_cta_display', true);
                 $display = is_array($display) ? $display : array();
                 
                 $first_position = isset($display['first_position']) ? absint($display['first_position']) : 30;
                 $show_end = isset($display['show_end']) ? (bool)$display['show_end'] : true;
 
-                // Calculate safe insert position
-                $insert_position = max(1, min($total_paragraphs - 1, floor(($total_paragraphs * $first_position) / 100)));
+                // Calculate insert position (ensure it's within bounds)
+                $insert_position = min($total_paragraphs - 1, max(1, floor(($total_paragraphs * $first_position) / 100)));
                 
-                if ($show_end && $insert_position > ($total_paragraphs - 3)) {
-                    $insert_position = floor($total_paragraphs / 2);
-                }
-
-                error_log('Nova CTAs: Calculated insert position: ' . $insert_position);
-
-                // Get CTA content
-                $cta = get_post($cta_id);
-                if (!$cta || $cta->post_type !== 'nova_cta') {
-                    error_log('Nova CTAs: Invalid CTA post object for ID: ' . $cta_id);
+                $cta_html = $this->build_cta_html($cta);
+                if (empty($cta_html)) {
                     continue;
                 }
 
-                try {
-                    $cta_html = $this->build_cta_html($cta);
-                    if (empty($cta_html)) {
-                        error_log('Nova CTAs: Empty CTA HTML generated for ID: ' . $cta_id);
-                        continue;
-                    }
-                } catch (Exception $e) {
-                    error_log('Nova CTAs: Error building CTA HTML: ' . $e->getMessage());
-                    continue;
+                // Store CTAs for insertion
+                if (!isset($inserted_ctas[$insert_position])) {
+                    $inserted_ctas[$insert_position] = array();
                 }
+                $inserted_ctas[$insert_position][] = $cta_html;
 
-                // Insert CTA at calculated position
-                if ($insert_position > 0 && $insert_position < $total_paragraphs) {
-                    try {
-                        $paragraphs[$insert_position] .= $cta_html;
-                        error_log('Nova CTAs: Inserted CTA at position: ' . $insert_position);
-                    } catch (Exception $e) {
-                        error_log('Nova CTAs: Error inserting CTA: ' . $e->getMessage());
-                        continue;
-                    }
-                }
-
-                // Add CTA at the end if enabled
+                // Add to end if enabled
                 if ($show_end) {
-                    try {
-                        $paragraphs[] = $cta_html;
-                        error_log('Nova CTAs: Added CTA at end of content');
-                    } catch (Exception $e) {
-                        error_log('Nova CTAs: Error adding CTA at end: ' . $e->getMessage());
+                    if (!isset($inserted_ctas[$total_paragraphs])) {
+                        $inserted_ctas[$total_paragraphs] = array();
+                    }
+                    $inserted_ctas[$total_paragraphs][] = $cta_html;
+                }
+            }
+
+            // Rebuild content with CTAs
+            for ($i = 0; $i < $total_paragraphs; $i++) {
+                // Add paragraph content if it exists
+                if (isset($paragraphs[$i]) && !empty($paragraphs[$i])) {
+                    $modified_content .= $paragraphs[$i];
+                    if (!preg_match('/<\/p>$/', $paragraphs[$i])) {
+                        $modified_content .= '</p>';
+                    }
+                }
+
+                // Add any CTAs that should be inserted at this position
+                if (isset($inserted_ctas[$i])) {
+                    foreach ($inserted_ctas[$i] as $cta_html) {
+                        $modified_content .= $cta_html;
                     }
                 }
             }
 
-            // Rebuild content safely
-            try {
-                $modified_content = '';
-                foreach ($paragraphs as $p) {
-                    if (!empty(trim($p))) {
-                        $modified_content .= '<p>' . trim($p) . '</p>';
-                    }
+            // Add any remaining CTAs that should appear at the end
+            if (isset($inserted_ctas[$total_paragraphs])) {
+                foreach ($inserted_ctas[$total_paragraphs] as $cta_html) {
+                    $modified_content .= $cta_html;
                 }
-                error_log('Nova CTAs: Successfully rebuilt content with CTAs');
-                $this->is_processing_cta = false;
-                return $modified_content;
-            } catch (Exception $e) {
-                error_log('Nova CTAs: Error rebuilding content: ' . $e->getMessage());
-                $this->is_processing_cta = false;
-                return $content;
             }
+
+            $this->is_processing_cta = false;
+            return $modified_content;
 
         } catch (Exception $e) {
             error_log('Nova CTAs Critical Error: ' . $e->getMessage());
