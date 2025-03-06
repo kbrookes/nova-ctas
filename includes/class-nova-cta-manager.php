@@ -501,40 +501,46 @@ class Nova_CTA_Manager {
     }
 
     public function save_cta_data($post_id) {
-        // Verify nonce
+        // Early return if this is an autosave
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            return;
+        }
+
+        // Early return if this is not our post type
+        if (get_post_type($post_id) !== 'nova_cta') {
+            return;
+        }
+
+        // Check permissions first
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+
+        // Verify nonce - moved after permission check
         if (!isset($_POST['nova_cta_editor_nonce']) || 
             !wp_verify_nonce($_POST['nova_cta_editor_nonce'], 'nova_cta_editor')) {
             return;
         }
 
-        // Check autosave
-        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-            return;
-        }
-
-        // Check permissions
-        if (!current_user_can('edit_post', $post_id)) {
-            return;
-        }
-
-        // Save content
+        // Save content if it exists
         if (isset($_POST['content'])) {
+            remove_action('save_post_nova_cta', array($this, 'save_cta_data'));
             wp_update_post(array(
                 'ID' => $post_id,
                 'post_content' => wp_kses_post($_POST['content'])
             ));
+            add_action('save_post_nova_cta', array($this, 'save_cta_data'));
         }
 
-        // Save settings (including categories and pillar page)
+        // Save settings
         if (isset($_POST['nova_cta_settings'])) {
             $settings = $_POST['nova_cta_settings'];
             
-            // Ensure display_categories is an array
-            if (!isset($settings['display_categories'])) {
+            // Initialize display_categories as empty array if not set
+            if (!isset($settings['display_categories']) || !is_array($settings['display_categories'])) {
                 $settings['display_categories'] = array();
             }
             
-            // Sanitize settings
             $sanitized_settings = array(
                 'button_text' => isset($settings['button_text']) ? sanitize_text_field($settings['button_text']) : '',
                 'button_url' => isset($settings['button_url']) ? esc_url_raw($settings['button_url']) : '',
@@ -548,7 +554,8 @@ class Nova_CTA_Manager {
 
         // Save design settings
         if (isset($_POST['nova_cta_design'])) {
-            update_post_meta($post_id, '_nova_cta_design', $this->sanitize_design_settings($_POST['nova_cta_design']));
+            $sanitized_design = $this->sanitize_design_settings($_POST['nova_cta_design']);
+            update_post_meta($post_id, '_nova_cta_design', $sanitized_design);
         }
 
         // Save display settings
@@ -557,8 +564,10 @@ class Nova_CTA_Manager {
             
             $display_settings = array(
                 'first_position' => isset($display['first_position']) ? absint($display['first_position']) : 30,
-                'show_end' => isset($display['show_end']) && $display['show_end'] == '1',
-                'conditions' => isset($display['conditions']) ? array_map('sanitize_text_field', (array)$display['conditions']) : array()
+                'show_end' => isset($display['show_end']),
+                'conditions' => isset($display['conditions']) && is_array($display['conditions']) 
+                    ? array_map('sanitize_text_field', $display['conditions']) 
+                    : array()
             );
             
             update_post_meta($post_id, '_nova_cta_display', $display_settings);
