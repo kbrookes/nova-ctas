@@ -170,3 +170,123 @@
         width: 100% !important;
     }
 }
+
+/* Nova CTAs Frontend Styles */
+
+/* Base CTA Container */
+.nova-cta {
+    margin: 2em 0;
+    padding: 2em;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* CTA Content */
+.nova-cta-content {
+    margin-bottom: 1.5em;
+}
+
+.nova-cta-content h2,
+.nova-cta-content h3,
+.nova-cta-content h4 {
+    margin-top: 0;
+    color: inherit;
+}
+
+.nova-cta-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* CTA Button */
+.nova-button {
+    display: inline-block;
+    padding: 0.8em 1.5em;
+    border-radius: 3px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* Button Styles */
+.nova-cta-button-default .nova-button {
+    background-color: #0073aa;
+    color: #ffffff;
+    border: none;
+}
+
+.nova-cta-button-default .nova-button:hover {
+    background-color: #005177;
+    color: #ffffff;
+}
+
+.nova-cta-button-outline .nova-button {
+    background-color: transparent;
+    border: 2px solid currentColor;
+}
+
+.nova-cta-button-outline .nova-button:hover {
+    background-color: currentColor;
+    color: #ffffff;
+}
+
+.nova-cta-button-minimal .nova-button {
+    background-color: transparent;
+    border: none;
+    padding: 0.5em 0;
+    border-bottom: 2px solid currentColor;
+    border-radius: 0;
+}
+
+.nova-cta-button-minimal .nova-button:hover {
+    padding-bottom: 0.3em;
+    border-bottom-width: 4px;
+}
+
+/* Layout Variations */
+.nova-cta-standard {
+    text-align: left;
+}
+
+.nova-cta-centered {
+    text-align: center;
+}
+
+.nova-cta-split {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2em;
+}
+
+.nova-cta-split .nova-cta-content {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.nova-cta-split .nova-cta-button {
+    flex-shrink: 0;
+}
+
+/* Responsive Styles */
+@media screen and (max-width: 768px) {
+    .nova-cta {
+        padding: 1.5em;
+    }
+
+    .nova-cta-split {
+        flex-direction: column;
+        gap: 1.5em;
+    }
+
+    .nova-cta-split .nova-cta-content {
+        margin-bottom: 1.5em;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .nova-cta {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+}

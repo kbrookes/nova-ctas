@@ -122,4 +122,134 @@
     .nova-settings-section {
         padding: 15px;
     }
+}
+
+/* Nova CTAs Admin Styles */
+
+/* Editor Container */
+.nova-cta-editor {
+    margin: 20px 0;
+    max-width: 1200px;
+}
+
+/* Tabs Navigation */
+.nova-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid #c3c4c7;
+    margin-bottom: 20px;
+    padding: 0 20px;
+}
+
+.nova-tab-button {
+    padding: 12px 20px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    background: transparent;
+    color: #646970;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: -1px;
+}
+
+.nova-tab-button:hover {
+    color: #2271b1;
+    border-color: #c3c4c7;
+    background: #f6f7f7;
+}
+
+.nova-tab-button.active {
+    background: #fff;
+    border-color: #c3c4c7;
+    border-bottom-color: #fff;
+    color: #1d2327;
+}
+
+/* Tab Content */
+.nova-tab-content {
+    display: none;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+}
+
+.nova-tab-content.active {
+    display: block;
+}
+
+/* Field Groups */
+.nova-field-group {
+    margin-bottom: 20px;
+}
+
+.nova-field-group:last-child {
+    margin-bottom: 0;
+}
+
+.nova-field-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.nova-field-group input[type="text"],
+.nova-field-group input[type="url"],
+.nova-field-group select {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Display Conditions */
+.nova-display-conditions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.nova-display-conditions label {
+    font-weight: normal;
+    margin: 0;
+}
+
+/* Color Picker */
+.wp-picker-container {
+    display: block;
+    margin-top: 8px;
+}
+
+/* Rich Text Editor */
+.wp-editor-wrap {
+    margin-bottom: 20px;
+}
+
+/* Submit Button */
+.nova-cta-editor .submit {
+    margin-top: 20px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-top: none;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 782px) {
+    .nova-tabs {
+        padding: 0 10px;
+    }
+
+    .nova-tab-button {
+        padding: 10px 15px;
+    }
+
+    .nova-tab-content {
+        padding: 15px;
+    }
+
+    .nova-field-group input[type="text"],
+    .nova-field-group input[type="url"],
+    .nova-field-group select {
+        max-width: 100%;
+    }
 } 

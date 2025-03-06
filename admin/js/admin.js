@@ -96,6 +96,27 @@
         initOpacitySlider();
         initTabs();
         initAlignmentButtons();
+
+        // Tab switching
+        $('.nova-tab-button').on('click', function() {
+            var tab = $(this).data('tab');
+            
+            // Update active states
+            $('.nova-tab-button').removeClass('active');
+            $(this).addClass('active');
+            
+            // Show selected tab content
+            $('.nova-tab-content').removeClass('active');
+            $('.nova-tab-content[data-tab="' + tab + '"]').addClass('active');
+        });
+
+        // Save form handling
+        $('.nova-cta-editor form').on('submit', function(e) {
+            // Make sure TinyMCE content is updated
+            if (typeof tinyMCE !== 'undefined') {
+                tinyMCE.triggerSave();
+            }
+        });
     });
 
 })(jQuery);
