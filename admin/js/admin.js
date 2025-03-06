@@ -155,28 +155,44 @@
             mediaUploader.open();
         });
 
-        // Log when form is about to submit
-        $('form#post').on('submit', function(e) {
-            console.log('Nova CTAs: Form submission detected');
-            console.log('Nova CTAs: Form action:', $(this).attr('action'));
-            console.log('Nova CTAs: Form method:', $(this).attr('method'));
-            
-            // Log all form fields
-            var formData = new FormData(this);
-            console.log('Nova CTAs: All form fields:');
-            for (var pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
+        // Update form submission logging
+        $('#post').on('submit', function(event) {
+            try {
+                console.log('Nova CTAs: Form submission detected');
+                
+                // Log basic form info
+                console.log('Nova CTAs: Form ID:', $(this).attr('id'));
+                console.log('Nova CTAs: Form action:', $(this).attr('action'));
+                console.log('Nova CTAs: Form method:', $(this).attr('method'));
+                
+                // Log design settings specifically
+                var designSettings = {};
+                $('[name^="nova_cta_design"]').each(function() {
+                    var $field = $(this);
+                    designSettings[$field.attr('name')] = $field.val();
+                });
+                console.log('Nova CTAs: Design Settings:', designSettings);
+                
+                // Log nonce
+                var nonce = $('#nova_cta_editor_nonce').val();
+                console.log('Nova CTAs: Nonce present:', !!nonce);
+                
+                // Don't prevent form submission
+                return true;
+            } catch (error) {
+                console.error('Nova CTAs: Error in form submission handler:', error);
+                // Still allow form to submit even if our logging fails
+                return true;
             }
-            
-            // Specifically log design settings
-            console.log('Nova CTAs: Design Settings:');
-            $('[name^="nova_cta_design"]').each(function() {
-                console.log($(this).attr('name') + ': ' + $(this).val());
+        });
+
+        // Add change event logging for design fields
+        $('[name^="nova_cta_design"]').on('change', function() {
+            var $field = $(this);
+            console.log('Nova CTAs: Design field changed:', {
+                name: $field.attr('name'),
+                value: $field.val()
             });
-            
-            // Log nonce
-            console.log('Nova CTAs: Nonce field:', $('#nova_cta_editor_nonce').val());
-            console.log('Nova CTAs: Nonce present:', formData.has('nova_cta_editor_nonce'));
         });
     });
 

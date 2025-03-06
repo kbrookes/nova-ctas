@@ -266,14 +266,14 @@ class Nova_CTA_Manager {
             <h3><?php _e('Layout', 'nova-ctas'); ?></h3>
             
             <div class="nova-field-group">
-                <label><?php _e('Inline Image:', 'nova-ctas'); ?></label>
+                <label for="nova_cta_inline_image"><?php _e('Inline Image:', 'nova-ctas'); ?></label>
                 <div class="nova-media-wrapper">
-                    <input type="hidden" name="nova_cta_design[inline_image]" value="<?php echo esc_attr($inline_image); ?>">
-                    <button type="button" class="button nova-media-upload"><?php _e('Choose Image', 'nova-ctas'); ?></button>
-                    <button type="button" class="button nova-remove-image" <?php echo empty($inline_image) ? 'style="display:none;"' : ''; ?>>
+                    <input type="hidden" id="nova_cta_inline_image" name="nova_cta_design[inline_image]" value="<?php echo esc_attr($inline_image); ?>">
+                    <button type="button" class="button nova-media-upload" aria-label="<?php esc_attr_e('Choose Image', 'nova-ctas'); ?>"><?php _e('Choose Image', 'nova-ctas'); ?></button>
+                    <button type="button" class="button nova-remove-image" <?php echo empty($inline_image) ? 'style="display:none;"' : ''; ?> aria-label="<?php esc_attr_e('Remove Image', 'nova-ctas'); ?>">
                         <?php _e('Remove Image', 'nova-ctas'); ?>
                     </button>
-                    <div class="nova-media-preview">
+                    <div class="nova-media-preview" aria-live="polite">
                         <?php if ($inline_image): ?>
                             <?php echo wp_get_attachment_image($inline_image, 'medium'); ?>
                         <?php endif; ?>
@@ -282,45 +282,45 @@ class Nova_CTA_Manager {
             </div>
 
             <div class="nova-field-group">
-                <label><?php _e('Image Position:', 'nova-ctas'); ?></label>
-                <select name="nova_cta_design[image_position]">
+                <label for="nova_cta_image_position"><?php _e('Image Position:', 'nova-ctas'); ?></label>
+                <select id="nova_cta_image_position" name="nova_cta_design[image_position]">
                     <option value="right" <?php selected($image_position, 'right'); ?>><?php _e('Right', 'nova-ctas'); ?></option>
                     <option value="left" <?php selected($image_position, 'left'); ?>><?php _e('Left', 'nova-ctas'); ?></option>
                 </select>
             </div>
 
             <div class="nova-field-group">
-                <label><?php _e('Content Width (%):', 'nova-ctas'); ?></label>
-                <input type="range" name="nova_cta_design[content_width]" value="<?php echo esc_attr($content_width); ?>" min="30" max="70" step="5">
-                <span class="range-value"><?php echo esc_html($content_width); ?>%</span>
+                <label for="nova_cta_content_width"><?php _e('Content Width (%):', 'nova-ctas'); ?></label>
+                <input type="range" id="nova_cta_content_width" name="nova_cta_design[content_width]" value="<?php echo esc_attr($content_width); ?>" min="30" max="70" step="5">
+                <span class="range-value" aria-live="polite"><?php echo esc_html($content_width); ?>%</span>
             </div>
 
             <div class="nova-field-group">
-                <label><?php _e('Content Alignment:', 'nova-ctas'); ?></label>
-                <div class="nova-alignment-controls">
+                <label id="content_alignment_label"><?php _e('Content Alignment:', 'nova-ctas'); ?></label>
+                <div class="nova-alignment-controls" role="radiogroup" aria-labelledby="content_alignment_label">
                     <label class="nova-alignment-option">
-                        <input type="radio" name="nova_cta_design[content_alignment]" value="left" <?php checked($content_alignment, 'left'); ?>>
-                        <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-left.svg" alt="<?php _e('Left', 'nova-ctas'); ?>">
+                        <input type="radio" id="nova_cta_align_left" name="nova_cta_design[content_alignment]" value="left" <?php checked($content_alignment, 'left'); ?>>
+                        <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-left.svg" alt="<?php _e('Align Left', 'nova-ctas'); ?>">
                     </label>
                     <label class="nova-alignment-option">
-                        <input type="radio" name="nova_cta_design[content_alignment]" value="center" <?php checked($content_alignment, 'center'); ?>>
-                        <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-center.svg" alt="<?php _e('Center', 'nova-ctas'); ?>">
+                        <input type="radio" id="nova_cta_align_center" name="nova_cta_design[content_alignment]" value="center" <?php checked($content_alignment, 'center'); ?>>
+                        <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-center.svg" alt="<?php _e('Align Center', 'nova-ctas'); ?>">
                     </label>
                     <label class="nova-alignment-option">
-                        <input type="radio" name="nova_cta_design[content_alignment]" value="right" <?php checked($content_alignment, 'right'); ?>>
-                        <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-right.svg" alt="<?php _e('Right', 'nova-ctas'); ?>">
+                        <input type="radio" id="nova_cta_align_right" name="nova_cta_design[content_alignment]" value="right" <?php checked($content_alignment, 'right'); ?>>
+                        <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-right.svg" alt="<?php _e('Align Right', 'nova-ctas'); ?>">
                     </label>
                 </div>
             </div>
 
             <div class="nova-field-group">
-                <label><?php _e('Element Gap (px):', 'nova-ctas'); ?></label>
-                <input type="range" name="nova_cta_design[element_gap]" value="<?php echo esc_attr($element_gap); ?>" min="10" max="60" step="5">
-                <span class="range-value"><?php echo esc_html($element_gap); ?>px</span>
+                <label for="nova_cta_element_gap"><?php _e('Element Gap (px):', 'nova-ctas'); ?></label>
+                <input type="range" id="nova_cta_element_gap" name="nova_cta_design[element_gap]" value="<?php echo esc_attr($element_gap); ?>" min="10" max="60" step="5">
+                <span class="range-value" aria-live="polite"><?php echo esc_html($element_gap); ?>px</span>
             </div>
         </div>
 
-        <!-- Original Box Design Section -->
+        <!-- Box Design Section -->
         <div class="nova-design-section">
             <h3><?php _e('Box Design', 'nova-ctas'); ?></h3>
             
@@ -332,23 +332,22 @@ class Nova_CTA_Manager {
             <div class="nova-field-group">
                 <h4><?php _e('Padding', 'nova-ctas'); ?></h4>
                 <div class="nova-spacing-inputs">
-                    <label data-position="top">
+                    <label for="nova_cta_padding_top" data-position="top">
                         <?php _e('Top', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[padding_top]" value="<?php echo esc_attr($padding['top']); ?>" class="tiny-text">
+                        <input type="number" id="nova_cta_padding_top" name="nova_cta_design[padding_top]" value="<?php echo esc_attr($padding['top']); ?>" class="tiny-text">
                     </label>
-                    <label data-position="right">
+                    <label for="nova_cta_padding_right" data-position="right">
                         <?php _e('Right', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[padding_right]" value="<?php echo esc_attr($padding['right']); ?>" class="tiny-text">
+                        <input type="number" id="nova_cta_padding_right" name="nova_cta_design[padding_right]" value="<?php echo esc_attr($padding['right']); ?>" class="tiny-text">
                     </label>
-                    <label data-position="bottom">
+                    <label for="nova_cta_padding_bottom" data-position="bottom">
                         <?php _e('Bottom', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[padding_bottom]" value="<?php echo esc_attr($padding['bottom']); ?>" class="tiny-text">
+                        <input type="number" id="nova_cta_padding_bottom" name="nova_cta_design[padding_bottom]" value="<?php echo esc_attr($padding['bottom']); ?>" class="tiny-text">
                     </label>
-                    <label data-position="left">
+                    <label for="nova_cta_padding_left" data-position="left">
                         <?php _e('Left', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[padding_left]" value="<?php echo esc_attr($padding['left']); ?>" class="tiny-text">
+                        <input type="number" id="nova_cta_padding_left" name="nova_cta_design[padding_left]" value="<?php echo esc_attr($padding['left']); ?>" class="tiny-text">
                     </label>
-                    <label data-position="center"></label>
                 </div>
             </div>
 
