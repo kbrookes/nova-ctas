@@ -541,27 +541,35 @@ class Nova_CTA_Manager {
     public function save_cta_data($post_id) {
         // Early return if this is an autosave
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+            error_log('Nova CTAs: Skipping save - autosave detected');
             return;
         }
 
         // Early return if this is not our post type
         if (get_post_type($post_id) !== 'nova_cta') {
+            error_log('Nova CTAs: Skipping save - not a CTA post type');
             return;
         }
 
         // Check permissions first
         if (!current_user_can('edit_post', $post_id)) {
+            error_log('Nova CTAs: Skipping save - user cannot edit post');
             return;
         }
 
         // Verify nonce - moved after permission check
         if (!isset($_POST['nova_cta_editor_nonce']) || 
             !wp_verify_nonce($_POST['nova_cta_editor_nonce'], 'nova_cta_editor')) {
+            error_log('Nova CTAs: Skipping save - nonce verification failed');
             return;
         }
 
+        error_log('Nova CTAs: Starting to save CTA data for post ID: ' . $post_id);
+        error_log('Nova CTAs: POST data received: ' . print_r($_POST, true));
+
         // Save content if it exists
         if (isset($_POST['content'])) {
+            error_log('Nova CTAs: Saving content');
             remove_action('save_post_nova_cta', array($this, 'save_cta_data'));
             wp_update_post(array(
                 'ID' => $post_id,
@@ -572,6 +580,7 @@ class Nova_CTA_Manager {
 
         // Save settings
         if (isset($_POST['nova_cta_settings'])) {
+            error_log('Nova CTAs: Saving CTA settings');
             $settings = $_POST['nova_cta_settings'];
             
             // Initialize display_categories as empty array if not set
@@ -586,17 +595,45 @@ class Nova_CTA_Manager {
                 'pillar_page' => isset($settings['pillar_page']) ? absint($settings['pillar_page']) : ''
             );
             
+            error_log('Nova CTAs: Sanitized settings: ' . print_r($sanitized_settings, true));
             update_post_meta($post_id, '_nova_cta_settings', $sanitized_settings);
+            
+            // Verify settings were saved
+            $saved_settings = get_post_meta($post_id, '_nova_cta_settings', true);
+            error_log('Nova CTAs: Verified saved settings: ' . print_r($saved_settings, true));
         }
 
         // Save design settings
         if (isset($_POST['nova_cta_design'])) {
+            error_log('Nova CTAs: Starting to save design settings');
+            error_log('Nova CTAs: Raw design data received: ' . print_r($_POST['nova_cta_design'], true));
+            
             $sanitized_design = $this->sanitize_design_settings($_POST['nova_cta_design']);
-            update_post_meta($post_id, '_nova_cta_design', $sanitized_design);
+            error_log('Nova CTAs: Sanitized design settings: ' . print_r($sanitized_design, true));
+            
+            // Delete existing meta first to ensure clean update
+            delete_post_meta($post_id, '_nova_cta_design');
+            
+            // Save new meta
+            $update_result = update_post_meta($post_id, '_nova_cta_design', $sanitized_design);
+            error_log('Nova CTAs: update_post_meta result for design settings: ' . var_export($update_result, true));
+            
+            // Verify the save immediately
+            $saved_design = get_post_meta($post_id, '_nova_cta_design', true);
+            error_log('Nova CTAs: Immediate verification of saved design settings: ' . print_r($saved_design, true));
+            
+            // Compare saved data with what we tried to save
+            $differences = array_diff_assoc(array_map('strval', $sanitized_design), array_map('strval', (array)$saved_design));
+            if (!empty($differences)) {
+                error_log('Nova CTAs: WARNING - Differences found between sanitized and saved design settings: ' . print_r($differences, true));
+            }
+        } else {
+            error_log('Nova CTAs: No design settings found in POST data');
         }
 
         // Save display settings
         if (isset($_POST['nova_cta_display'])) {
+            error_log('Nova CTAs: Saving display settings');
             $display = $_POST['nova_cta_display'];
             
             $display_settings = array(
@@ -607,12 +644,31 @@ class Nova_CTA_Manager {
                     : array()
             );
             
+            error_log('Nova CTAs: Sanitized display settings: ' . print_r($display_settings, true));
             update_post_meta($post_id, '_nova_cta_display', $display_settings);
+            
+            // Verify display settings were saved
+            $saved_display = get_post_meta($post_id, '_nova_cta_display', true);
+            error_log('Nova CTAs: Verified saved display settings: ' . print_r($saved_display, true));
         }
+
+        error_log('Nova CTAs: Finished saving CTA data for post ID: ' . $post_id);
     }
 
     private function sanitize_design_settings($design) {
+        error_log('Nova CTAs: Starting design settings sanitization');
+        error_log('Nova CTAs: Input design settings: ' . print_r($design, true));
+        
         $sanitized = array();
+        
+        // Layout Settings
+        $sanitized['inline_image'] = isset($design['inline_image']) ? absint($design['inline_image']) : '';
+        $sanitized['image_position'] = isset($design['image_position']) ? sanitize_text_field($design['image_position']) : 'right';
+        $sanitized['content_width'] = isset($design['content_width']) ? absint($design['content_width']) : 50;
+        $sanitized['content_alignment'] = isset($design['content_alignment']) ? sanitize_text_field($design['content_alignment']) : 'left';
+        $sanitized['element_gap'] = isset($design['element_gap']) ? absint($design['element_gap']) : 20;
+        
+        error_log('Nova CTAs: Sanitized layout settings: ' . print_r(array_intersect_key($sanitized, array_flip(['inline_image', 'image_position', 'content_width', 'content_alignment', 'element_gap'])), true));
         
         // Box Design Settings
         $sanitized['border_radius'] = isset($design['border_radius']) ? sanitize_text_field($design['border_radius']) : '0';
@@ -623,11 +679,15 @@ class Nova_CTA_Manager {
         $sanitized['padding_bottom'] = isset($design['padding_bottom']) ? absint($design['padding_bottom']) : 30;
         $sanitized['padding_left'] = isset($design['padding_left']) ? absint($design['padding_left']) : 30;
         
+        error_log('Nova CTAs: Sanitized padding settings: ' . print_r(array_intersect_key($sanitized, array_flip(['padding_top', 'padding_right', 'padding_bottom', 'padding_left'])), true));
+        
         // Margin
         $sanitized['margin_top'] = isset($design['margin_top']) ? absint($design['margin_top']) : 60;
         $sanitized['margin_right'] = isset($design['margin_right']) ? absint($design['margin_right']) : 0;
         $sanitized['margin_bottom'] = isset($design['margin_bottom']) ? absint($design['margin_bottom']) : 60;
         $sanitized['margin_left'] = isset($design['margin_left']) ? absint($design['margin_left']) : 0;
+        
+        error_log('Nova CTAs: Sanitized margin settings: ' . print_r(array_intersect_key($sanitized, array_flip(['margin_top', 'margin_right', 'margin_bottom', 'margin_left'])), true));
         
         // Shadow
         $sanitized['shadow_x'] = isset($design['shadow_x']) ? absint($design['shadow_x']) : 0;
@@ -635,6 +695,8 @@ class Nova_CTA_Manager {
         $sanitized['shadow_blur'] = isset($design['shadow_blur']) ? absint($design['shadow_blur']) : 0;
         $sanitized['shadow_spread'] = isset($design['shadow_spread']) ? absint($design['shadow_spread']) : 0;
         $sanitized['shadow_color'] = isset($design['shadow_color']) ? sanitize_text_field($design['shadow_color']) : 'rgba(0,0,0,0.1)';
+        
+        error_log('Nova CTAs: Sanitized shadow settings: ' . print_r(array_intersect_key($sanitized, array_flip(['shadow_x', 'shadow_y', 'shadow_blur', 'shadow_spread', 'shadow_color'])), true));
         
         // Background Settings
         $sanitized['bg_color'] = isset($design['bg_color']) ? sanitize_text_field($design['bg_color']) : '#f8f9fa';
@@ -644,6 +706,8 @@ class Nova_CTA_Manager {
         $sanitized['overlay_color'] = isset($design['overlay_color']) ? sanitize_text_field($design['overlay_color']) : '';
         $sanitized['overlay_opacity'] = isset($design['overlay_opacity']) ? absint($design['overlay_opacity']) : 50;
         
+        error_log('Nova CTAs: Sanitized background settings: ' . print_r(array_intersect_key($sanitized, array_flip(['bg_color', 'bg_image', 'bg_position', 'bg_size', 'overlay_color', 'overlay_opacity'])), true));
+        
         // Typography Settings
         $sanitized['title_color'] = isset($design['title_color']) ? sanitize_text_field($design['title_color']) : '';
         $sanitized['title_font_size'] = isset($design['title_font_size']) ? sanitize_text_field($design['title_font_size']) : '2rem';
@@ -651,6 +715,17 @@ class Nova_CTA_Manager {
         $sanitized['body_color'] = isset($design['body_color']) ? sanitize_text_field($design['body_color']) : '';
         $sanitized['body_font_size'] = isset($design['body_font_size']) ? sanitize_text_field($design['body_font_size']) : '1rem';
         $sanitized['body_font_weight'] = isset($design['body_font_weight']) ? sanitize_text_field($design['body_font_weight']) : '400';
+        
+        error_log('Nova CTAs: Sanitized typography settings: ' . print_r(array_intersect_key($sanitized, array_flip(['title_color', 'title_font_size', 'title_font_weight', 'body_color', 'body_font_size', 'body_font_weight'])), true));
+
+        // Button Settings
+        $sanitized['button_bg_color'] = isset($design['button_bg_color']) ? sanitize_text_field($design['button_bg_color']) : '';
+        $sanitized['button_text_color'] = isset($design['button_text_color']) ? sanitize_text_field($design['button_text_color']) : '';
+        $sanitized['button_style'] = isset($design['button_style']) ? sanitize_text_field($design['button_style']) : 'solid';
+        
+        error_log('Nova CTAs: Sanitized button settings: ' . print_r(array_intersect_key($sanitized, array_flip(['button_bg_color', 'button_text_color', 'button_style'])), true));
+        
+        error_log('Nova CTAs: Final sanitized design settings: ' . print_r($sanitized, true));
         
         return $sanitized;
     }
