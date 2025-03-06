@@ -68,6 +68,7 @@ class Nova_CTA_Manager {
             'search_items'      => __('Search CTAs', 'nova-ctas'),
             'not_found'         => __('No CTAs found', 'nova-ctas'),
             'not_found_in_trash'=> __('No CTAs found in trash', 'nova-ctas'),
+            'enter_title_here'  => __('CTA Heading', 'nova-ctas'),
         );
 
         $args = array(
@@ -183,33 +184,213 @@ class Nova_CTA_Manager {
         $text_color = isset($design['text_color']) ? $design['text_color'] : '#212529';
         $button_style = isset($design['button_style']) ? $design['button_style'] : 'default';
         $layout = isset($design['layout']) ? $design['layout'] : 'standard';
+        $bg_image = isset($design['bg_image']) ? $design['bg_image'] : '';
+        $bg_position = isset($design['bg_position']) ? $design['bg_position'] : 'center center';
+        $bg_size = isset($design['bg_size']) ? $design['bg_size'] : 'cover';
+        $overlay_color = isset($design['overlay_color']) ? $design['overlay_color'] : '';
+        $overlay_opacity = isset($design['overlay_opacity']) ? $design['overlay_opacity'] : '50';
+        
+        // Typography settings
+        $title_color = isset($design['title_color']) ? $design['title_color'] : '';
+        $title_font_size = isset($design['title_font_size']) ? $design['title_font_size'] : '2rem';
+        $title_font_weight = isset($design['title_font_weight']) ? $design['title_font_weight'] : '700';
+        $body_color = isset($design['body_color']) ? $design['body_color'] : '';
+        $body_font_size = isset($design['body_font_size']) ? $design['body_font_size'] : '1rem';
+        $body_font_weight = isset($design['body_font_weight']) ? $design['body_font_weight'] : '400';
+        
+        // Box design settings
+        $border_radius = isset($design['border_radius']) ? $design['border_radius'] : '0';
+        $padding = array(
+            'top' => isset($design['padding_top']) ? $design['padding_top'] : '30',
+            'right' => isset($design['padding_right']) ? $design['padding_right'] : '30',
+            'bottom' => isset($design['padding_bottom']) ? $design['padding_bottom'] : '30',
+            'left' => isset($design['padding_left']) ? $design['padding_left'] : '30'
+        );
+        $margin = array(
+            'top' => isset($design['margin_top']) ? $design['margin_top'] : '60',
+            'right' => isset($design['margin_right']) ? $design['margin_right'] : '0',
+            'bottom' => isset($design['margin_bottom']) ? $design['margin_bottom'] : '60',
+            'left' => isset($design['margin_left']) ? $design['margin_left'] : '0'
+        );
+        $shadow = array(
+            'x' => isset($design['shadow_x']) ? $design['shadow_x'] : '0',
+            'y' => isset($design['shadow_y']) ? $design['shadow_y'] : '0',
+            'blur' => isset($design['shadow_blur']) ? $design['shadow_blur'] : '0',
+            'spread' => isset($design['shadow_spread']) ? $design['shadow_spread'] : '0',
+            'color' => isset($design['shadow_color']) ? $design['shadow_color'] : 'rgba(0,0,0,0)'
+        );
         ?>
         <div class="nova-field-group">
-            <label for="nova_cta_bg_color"><?php _e('Background Color:', 'nova-ctas'); ?></label>
-            <input type="text" id="nova_cta_bg_color" name="nova_cta_design[bg_color]" value="<?php echo esc_attr($bg_color); ?>" class="nova-color-picker">
+            <h3><?php _e('Background Settings', 'nova-ctas'); ?></h3>
+            
+            <div class="nova-field-group">
+                <label for="nova_cta_bg_color"><?php _e('Background Color:', 'nova-ctas'); ?></label>
+                <input type="text" id="nova_cta_bg_color" name="nova_cta_design[bg_color]" value="<?php echo esc_attr($bg_color); ?>" class="nova-color-picker">
+            </div>
+
+            <div class="nova-field-group">
+                <label for="nova_cta_bg_image"><?php _e('Background Image:', 'nova-ctas'); ?></label>
+                <div class="nova-media-wrapper">
+                    <input type="hidden" name="nova_cta_design[bg_image]" value="<?php echo esc_attr($bg_image); ?>">
+                    <button type="button" class="button nova-media-upload"><?php _e('Choose Image', 'nova-ctas'); ?></button>
+                    <button type="button" class="button nova-remove-image" <?php echo empty($bg_image) ? 'style="display:none;"' : ''; ?>>
+                        <?php _e('Remove Image', 'nova-ctas'); ?>
+                    </button>
+                    <div class="nova-media-preview">
+                        <?php if ($bg_image): ?>
+                            <?php echo wp_get_attachment_image($bg_image, 'medium'); ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nova-field-group">
+                <label for="nova_cta_bg_position"><?php _e('Background Position:', 'nova-ctas'); ?></label>
+                <select id="nova_cta_bg_position" name="nova_cta_design[bg_position]">
+                    <option value="center center" <?php selected($bg_position, 'center center'); ?>><?php _e('Center', 'nova-ctas'); ?></option>
+                    <option value="top center" <?php selected($bg_position, 'top center'); ?>><?php _e('Top', 'nova-ctas'); ?></option>
+                    <option value="bottom center" <?php selected($bg_position, 'bottom center'); ?>><?php _e('Bottom', 'nova-ctas'); ?></option>
+                </select>
+            </div>
+
+            <div class="nova-field-group">
+                <label for="nova_cta_bg_size"><?php _e('Background Size:', 'nova-ctas'); ?></label>
+                <select id="nova_cta_bg_size" name="nova_cta_design[bg_size]">
+                    <option value="cover" <?php selected($bg_size, 'cover'); ?>><?php _e('Cover', 'nova-ctas'); ?></option>
+                    <option value="contain" <?php selected($bg_size, 'contain'); ?>><?php _e('Contain', 'nova-ctas'); ?></option>
+                    <option value="auto" <?php selected($bg_size, 'auto'); ?>><?php _e('Auto', 'nova-ctas'); ?></option>
+                </select>
+            </div>
+
+            <div class="nova-field-group">
+                <label for="nova_cta_overlay_color"><?php _e('Overlay Color:', 'nova-ctas'); ?></label>
+                <input type="text" id="nova_cta_overlay_color" name="nova_cta_design[overlay_color]" value="<?php echo esc_attr($overlay_color); ?>" class="nova-color-picker">
+            </div>
+
+            <div class="nova-field-group">
+                <label for="nova_cta_overlay_opacity"><?php _e('Overlay Opacity:', 'nova-ctas'); ?></label>
+                <input type="range" id="nova_cta_overlay_opacity" name="nova_cta_design[overlay_opacity]" value="<?php echo esc_attr($overlay_opacity); ?>" min="0" max="100" step="1">
+                <span class="opacity-value"><?php echo esc_html($overlay_opacity); ?>%</span>
+            </div>
         </div>
 
         <div class="nova-field-group">
-            <label for="nova_cta_text_color"><?php _e('Text Color:', 'nova-ctas'); ?></label>
-            <input type="text" id="nova_cta_text_color" name="nova_cta_design[text_color]" value="<?php echo esc_attr($text_color); ?>" class="nova-color-picker">
+            <h3><?php _e('Typography', 'nova-ctas'); ?></h3>
+            
+            <div class="nova-field-group">
+                <label for="nova_cta_title_color"><?php _e('Title Color:', 'nova-ctas'); ?></label>
+                <input type="text" id="nova_cta_title_color" name="nova_cta_design[title_color]" value="<?php echo esc_attr($title_color); ?>" class="nova-color-picker">
+            </div>
+
+            <div class="nova-field-group">
+                <label for="nova_cta_title_font_size"><?php _e('Title Font Size:', 'nova-ctas'); ?></label>
+                <input type="text" id="nova_cta_title_font_size" name="nova_cta_design[title_font_size]" value="<?php echo esc_attr($title_font_size); ?>" class="regular-text">
+            </div>
+
+            <div class="nova-field-group">
+                <label for="nova_cta_title_font_weight"><?php _e('Title Font Weight:', 'nova-ctas'); ?></label>
+                <select id="nova_cta_title_font_weight" name="nova_cta_design[title_font_weight]">
+                    <option value="400" <?php selected($title_font_weight, '400'); ?>><?php _e('Normal', 'nova-ctas'); ?></option>
+                    <option value="700" <?php selected($title_font_weight, '700'); ?>><?php _e('Bold', 'nova-ctas'); ?></option>
+                </select>
+            </div>
+
+            <div class="nova-field-group">
+                <label for="nova_cta_body_color"><?php _e('Body Color:', 'nova-ctas'); ?></label>
+                <input type="text" id="nova_cta_body_color" name="nova_cta_design[body_color]" value="<?php echo esc_attr($body_color); ?>" class="nova-color-picker">
+            </div>
+
+            <div class="nova-field-group">
+                <label for="nova_cta_body_font_size"><?php _e('Body Font Size:', 'nova-ctas'); ?></label>
+                <input type="text" id="nova_cta_body_font_size" name="nova_cta_design[body_font_size]" value="<?php echo esc_attr($body_font_size); ?>" class="regular-text">
+            </div>
+
+            <div class="nova-field-group">
+                <label for="nova_cta_body_font_weight"><?php _e('Body Font Weight:', 'nova-ctas'); ?></label>
+                <select id="nova_cta_body_font_weight" name="nova_cta_design[body_font_weight]">
+                    <option value="400" <?php selected($body_font_weight, '400'); ?>><?php _e('Normal', 'nova-ctas'); ?></option>
+                    <option value="700" <?php selected($body_font_weight, '700'); ?>><?php _e('Bold', 'nova-ctas'); ?></option>
+                </select>
+            </div>
         </div>
 
         <div class="nova-field-group">
-            <label for="nova_cta_button_style"><?php _e('Button Style:', 'nova-ctas'); ?></label>
-            <select id="nova_cta_button_style" name="nova_cta_design[button_style]">
-                <option value="default" <?php selected($button_style, 'default'); ?>><?php _e('Default', 'nova-ctas'); ?></option>
-                <option value="outline" <?php selected($button_style, 'outline'); ?>><?php _e('Outline', 'nova-ctas'); ?></option>
-                <option value="minimal" <?php selected($button_style, 'minimal'); ?>><?php _e('Minimal', 'nova-ctas'); ?></option>
-            </select>
-        </div>
+            <h3><?php _e('Box Design', 'nova-ctas'); ?></h3>
+            
+            <div class="nova-field-group">
+                <label for="nova_cta_border_radius"><?php _e('Border Radius:', 'nova-ctas'); ?></label>
+                <input type="text" id="nova_cta_border_radius" name="nova_cta_design[border_radius]" value="<?php echo esc_attr($border_radius); ?>" class="small-text"> px
+            </div>
 
-        <div class="nova-field-group">
-            <label for="nova_cta_layout"><?php _e('Layout:', 'nova-ctas'); ?></label>
-            <select id="nova_cta_layout" name="nova_cta_design[layout]">
-                <option value="standard" <?php selected($layout, 'standard'); ?>><?php _e('Standard', 'nova-ctas'); ?></option>
-                <option value="centered" <?php selected($layout, 'centered'); ?>><?php _e('Centered', 'nova-ctas'); ?></option>
-                <option value="split" <?php selected($layout, 'split'); ?>><?php _e('Split', 'nova-ctas'); ?></option>
-            </select>
+            <div class="nova-field-group">
+                <h4><?php _e('Padding (px):', 'nova-ctas'); ?></h4>
+                <div class="nova-spacing-inputs">
+                    <label>
+                        <?php _e('Top', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[padding_top]" value="<?php echo esc_attr($padding['top']); ?>" class="tiny-text">
+                    </label>
+                    <label>
+                        <?php _e('Right', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[padding_right]" value="<?php echo esc_attr($padding['right']); ?>" class="tiny-text">
+                    </label>
+                    <label>
+                        <?php _e('Bottom', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[padding_bottom]" value="<?php echo esc_attr($padding['bottom']); ?>" class="tiny-text">
+                    </label>
+                    <label>
+                        <?php _e('Left', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[padding_left]" value="<?php echo esc_attr($padding['left']); ?>" class="tiny-text">
+                    </label>
+                </div>
+            </div>
+
+            <div class="nova-field-group">
+                <h4><?php _e('Margin (px):', 'nova-ctas'); ?></h4>
+                <div class="nova-spacing-inputs">
+                    <label>
+                        <?php _e('Top', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[margin_top]" value="<?php echo esc_attr($margin['top']); ?>" class="tiny-text">
+                    </label>
+                    <label>
+                        <?php _e('Right', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[margin_right]" value="<?php echo esc_attr($margin['right']); ?>" class="tiny-text">
+                    </label>
+                    <label>
+                        <?php _e('Bottom', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[margin_bottom]" value="<?php echo esc_attr($margin['bottom']); ?>" class="tiny-text">
+                    </label>
+                    <label>
+                        <?php _e('Left', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[margin_left]" value="<?php echo esc_attr($margin['left']); ?>" class="tiny-text">
+                    </label>
+                </div>
+            </div>
+
+            <div class="nova-field-group">
+                <h4><?php _e('Box Shadow:', 'nova-ctas'); ?></h4>
+                <div class="nova-shadow-inputs">
+                    <label>
+                        <?php _e('X Offset', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[shadow_x]" value="<?php echo esc_attr($shadow['x']); ?>" class="tiny-text">
+                    </label>
+                    <label>
+                        <?php _e('Y Offset', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[shadow_y]" value="<?php echo esc_attr($shadow['y']); ?>" class="tiny-text">
+                    </label>
+                    <label>
+                        <?php _e('Blur', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[shadow_blur]" value="<?php echo esc_attr($shadow['blur']); ?>" class="tiny-text">
+                    </label>
+                    <label>
+                        <?php _e('Spread', 'nova-ctas'); ?>
+                        <input type="number" name="nova_cta_design[shadow_spread]" value="<?php echo esc_attr($shadow['spread']); ?>" class="tiny-text">
+                    </label>
+                </div>
+                <div class="nova-field-group">
+                    <label for="nova_cta_shadow_color"><?php _e('Shadow Color:', 'nova-ctas'); ?></label>
+                    <input type="text" id="nova_cta_shadow_color" name="nova_cta_design[shadow_color]" value="<?php echo esc_attr($shadow['color']); ?>" class="nova-color-picker">
+                </div>
+            </div>
         </div>
         <?php
     }
@@ -217,18 +398,28 @@ class Nova_CTA_Manager {
     private function render_display_tab($display) {
         $position = isset($display['position']) ? $display['position'] : 'after_content';
         $conditions = isset($display['conditions']) ? $display['conditions'] : array();
+        $first_position = isset($display['first_position']) ? $display['first_position'] : 30;
+        $show_end = isset($display['show_end']) ? $display['show_end'] : true;
         ?>
         <div class="nova-field-group">
-            <label for="nova_cta_position"><?php _e('Display Position:', 'nova-ctas'); ?></label>
-            <select id="nova_cta_position" name="nova_cta_display[position]">
-                <option value="before_content" <?php selected($position, 'before_content'); ?>><?php _e('Before Content', 'nova-ctas'); ?></option>
-                <option value="after_content" <?php selected($position, 'after_content'); ?>><?php _e('After Content', 'nova-ctas'); ?></option>
-                <option value="after_first_paragraph" <?php selected($position, 'after_first_paragraph'); ?>><?php _e('After First Paragraph', 'nova-ctas'); ?></option>
-            </select>
+            <h3><?php _e('Position Settings', 'nova-ctas'); ?></h3>
+            
+            <div class="nova-field-group">
+                <label for="nova_cta_first_position"><?php _e('First Position (% through content):', 'nova-ctas'); ?></label>
+                <input type="range" id="nova_cta_first_position" name="nova_cta_display[first_position]" value="<?php echo esc_attr($first_position); ?>" min="0" max="100" step="5">
+                <span class="position-value"><?php echo esc_html($first_position); ?>%</span>
+            </div>
+
+            <div class="nova-field-group">
+                <label>
+                    <input type="checkbox" name="nova_cta_display[show_end]" value="1" <?php checked($show_end, true); ?>>
+                    <?php _e('Show at end of content', 'nova-ctas'); ?>
+                </label>
+            </div>
         </div>
 
         <div class="nova-field-group">
-            <label><?php _e('Display Conditions:', 'nova-ctas'); ?></label>
+            <h3><?php _e('Display Conditions', 'nova-ctas'); ?></h3>
             <div class="nova-display-conditions">
                 <label>
                     <input type="checkbox" name="nova_cta_display[conditions][]" value="posts" <?php checked(in_array('posts', $conditions)); ?>>
@@ -476,8 +667,7 @@ class Nova_CTA_Manager {
     }
 
     public function maybe_insert_cta($content) {
-        // Only process main content of singular pages
-        if (!is_singular() || !in_the_loop() || !is_main_query()) {
+        if (!is_singular()) {
             return $content;
         }
 
@@ -498,35 +688,52 @@ class Nova_CTA_Manager {
             return $content;
         }
 
-        // Process each CTA
+        // Get actual paragraphs (not just HTML tags)
+        $paragraphs = explode("\n\n", $content);
+        $total_paragraphs = count($paragraphs);
+
+        // Calculate all CTA positions first
+        $cta_positions = array();
         foreach ($ctas as $cta) {
             $display = get_post_meta($cta->ID, '_nova_cta_display', true);
-            $position = isset($display['position']) ? $display['position'] : 'after_content';
+            $first_position = isset($display['first_position']) ? $display['first_position'] : 30;
+            
+            // Calculate paragraph position based on percentage
+            $insert_at = max(1, floor($total_paragraphs * ($first_position / 100)));
+            
+            // Ensure we don't insert too close to the end
+            if ($insert_at > ($total_paragraphs - 2)) {
+                $insert_at = max(1, $total_paragraphs - 2);
+            }
 
-            $cta_html = $this->build_cta_html($cta);
-
-            switch ($position) {
-                case 'before_content':
-                    $content = $cta_html . $content;
-                    break;
-
-                case 'after_first_paragraph':
-                    $pos = strpos($content, '</p>');
-                    if ($pos !== false) {
-                        $content = substr_replace($content, '</p>' . $cta_html, $pos, 4);
-                    } else {
-                        $content .= $cta_html;
-                    }
-                    break;
-
-                case 'after_content':
-                default:
-                    $content .= $cta_html;
-                    break;
+            // Store positions
+            $cta_positions[$insert_at][] = $cta->ID;
+            if (!empty($display['show_end'])) {
+                $cta_positions['end'][] = $cta->ID;
             }
         }
 
-        return $content;
+        // Build new content with CTAs
+        $new_content = array();
+        foreach ($paragraphs as $index => $paragraph) {
+            $new_content[] = $paragraph;
+            
+            // Insert CTAs after appropriate paragraphs
+            if (isset($cta_positions[$index + 1])) {
+                foreach ($cta_positions[$index + 1] as $cta_id) {
+                    $new_content[] = sprintf('[nova_cta id="%d"]', $cta_id);
+                }
+            }
+        }
+
+        // Add end-of-content CTAs
+        if (isset($cta_positions['end'])) {
+            foreach ($cta_positions['end'] as $cta_id) {
+                $new_content[] = sprintf('[nova_cta id="%d"]', $cta_id);
+            }
+        }
+
+        return implode("\n\n", $new_content);
     }
 
     private function get_ctas_for_post($post_id, $post_type) {
