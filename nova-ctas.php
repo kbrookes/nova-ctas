@@ -13,7 +13,9 @@
  * Text Domain: nova-ctas
  * Domain Path: /languages
  * GitHub Plugin URI: https://github.com/kbrookes/nova-ctas
+ * GitHub Branch: main
  * Primary Branch: main
+ * Release Asset: true
  */
 
 // If this file is called directly, abort.
