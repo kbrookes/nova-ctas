@@ -1075,17 +1075,8 @@ class Nova_CTA_Manager {
             );
 
             // Add title with typography settings
-            $title_styles = array();
-            if (!empty($design['title_font_size'])) {
-                $title_styles[] = 'font-size: ' . esc_attr($design['title_font_size']);
-            }
-            if (!empty($design['title_font_weight'])) {
-                $title_styles[] = 'font-weight: ' . esc_attr($design['title_font_weight']);
-            }
-
             $html .= sprintf(
-                '<h3 class="nova-cta-title" style="%s">%s</h3>',
-                esc_attr(implode('; ', array_filter($title_styles))),
+                '<h3 class="nova-cta-title">%s</h3>',
                 esc_html($cta->post_title)
             );
             
@@ -1366,10 +1357,10 @@ class Nova_CTA_Manager {
                 $styles .= "color: " . esc_attr($design['title_color']) . " !important;";
             }
             if (!empty($design['title_font_size'])) {
-                $styles .= "font-size: " . esc_attr($design['title_font_size']) . ";";
+                $styles .= "font-size: " . esc_attr($design['title_font_size']) . " !important;";
             }
             if (!empty($design['title_font_weight'])) {
-                $styles .= "font-weight: " . esc_attr($design['title_font_weight']) . ";";
+                $styles .= "font-weight: " . esc_attr($design['title_font_weight']) . " !important;";
             }
             $styles .= "}";
             
