@@ -3,7 +3,7 @@
  * Plugin Name: Nova CTAs
  * Plugin URI: https://github.com/kbrookes/nova-ctas
  * Description: A WordPress plugin for creating and managing Call To Action buttons
- * Version: 1.2.0
+ * Version: 1.2.1
  * Requires at least: 5.0
  * Requires PHP: 7.2
  * Author: Kelsey Brookes
@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('NOVA_CTAS_VERSION', '1.2.0');
+define('NOVA_CTAS_VERSION', '1.2.1');
 define('NOVA_CTAS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('NOVA_CTAS_PLUGIN_URL', plugin_dir_url(__FILE__));
 
