@@ -395,137 +395,11 @@ class Nova_CTA_Manager {
         <div class="nova-design-section">
             <h3><?php _e('Box Design', 'nova-ctas'); ?></h3>
             
-            <div class="nova-field-group" style="max-width: 200px;">
-                <label>
-                    <?php _e('Border Radius:', 'nova-ctas'); ?>
-                    <div class="nova-border-radius-control">
-                        <input type="text" 
-                               name="nova_cta_design[border_radius]" 
-                               value="<?php echo esc_attr($border_radius); ?>" 
-                               class="small-text" 
-                               style="width: 60px;"
-                               maxlength="6">
-                        <div class="nova-unit-selector button-group">
-                            <input type="radio" 
-                                   name="nova_cta_design[border_radius_unit]" 
-                                   value="px" 
-                                   <?php checked($design['border_radius_unit'] ?? 'px', 'px'); ?> 
-                                   id="br_unit_px" 
-                                   class="screen-reader-text">
-                            <label for="br_unit_px" class="button">px</label>
-                            
-                            <input type="radio" 
-                                   name="nova_cta_design[border_radius_unit]" 
-                                   value="rem" 
-                                   <?php checked($design['border_radius_unit'] ?? 'px', 'rem'); ?> 
-                                   id="br_unit_rem" 
-                                   class="screen-reader-text">
-                            <label for="br_unit_rem" class="button">rem</label>
-                            
-                            <input type="radio" 
-                                   name="nova_cta_design[border_radius_unit]" 
-                                   value="%" 
-                                   <?php checked($design['border_radius_unit'] ?? 'px', '%'); ?> 
-                                   id="br_unit_percent" 
-                                   class="screen-reader-text">
-                            <label for="br_unit_percent" class="button">%</label>
-                        </div>
-                    </div>
-                </label>
-            </div>
-
-            <div class="nova-field-group" style="max-width: 400px;">
-                <h4><?php _e('Box Shadow', 'nova-ctas'); ?></h4>
-                <div class="nova-shadow-inputs">
-                    <div class="nova-shadow-row">
-                        <label>
-                            <?php _e('X', 'nova-ctas'); ?>
-                            <input type="number" 
-                                   name="nova_cta_design[shadow_x]" 
-                                   value="<?php echo esc_attr($shadow['x']); ?>" 
-                                   class="tiny-text" 
-                                   style="width: 60px;">
-                        </label>
-                        <label>
-                            <?php _e('Y', 'nova-ctas'); ?>
-                            <input type="number" 
-                                   name="nova_cta_design[shadow_y]" 
-                                   value="<?php echo esc_attr($shadow['y']); ?>" 
-                                   class="tiny-text" 
-                                   style="width: 60px;">
-                        </label>
-                    </div>
-                    <div class="nova-shadow-row">
-                        <label>
-                            <?php _e('Blur', 'nova-ctas'); ?>
-                            <input type="number" 
-                                   name="nova_cta_design[shadow_blur]" 
-                                   value="<?php echo esc_attr($shadow['blur']); ?>" 
-                                   class="tiny-text" 
-                                   style="width: 60px;">
-                        </label>
-                        <label>
-                            <?php _e('Spread', 'nova-ctas'); ?>
-                            <input type="number" 
-                                   name="nova_cta_design[shadow_spread]" 
-                                   value="<?php echo esc_attr($shadow['spread']); ?>" 
-                                   class="tiny-text" 
-                                   style="width: 60px;">
-                        </label>
-                    </div>
-                    <div class="nova-shadow-row">
-                        <label>
-                            <?php _e('Color', 'nova-ctas'); ?>
-                            <input type="text" 
-                                   name="nova_cta_design[shadow_color]" 
-                                   value="<?php echo esc_attr($shadow['color']); ?>" 
-                                   class="nova-color-picker" 
-                                   style="width: 100%;">
-                        </label>
-                    </div>
-                </div>
-                <style>
-                    .nova-border-radius-control {
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                    }
-                    .nova-unit-selector {
-                        display: inline-flex;
-                    }
-                    .nova-unit-selector .button {
-                        min-width: 40px;
-                        text-align: center;
-                    }
-                    .nova-shadow-inputs {
-                        background: #f0f0f1;
-                        padding: 12px;
-                        border-radius: 4px;
-                    }
-                    .nova-shadow-row {
-                        display: flex;
-                        gap: 12px;
-                        margin-bottom: 8px;
-                    }
-                    .nova-shadow-row:last-child {
-                        margin-bottom: 0;
-                    }
-                    .nova-shadow-row label {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 4px;
-                        flex: 1;
-                    }
-                    .nova-shadow-row input[type="number"] {
-                        text-align: right;
-                    }
-                </style>
-            </div>
-
+            <!-- Margin & Padding Controls -->
             <div class="nova-box-controls">
                 <!-- Padding Controls -->
                 <div class="nova-spacing-controls nova-padding-controls">
-                    <h4><?php _e('Padding', 'nova-ctas'); ?></h4>
+                    <h4 style="margin-bottom: 0.5rem;"><?php _e('Padding', 'nova-ctas'); ?></h4>
                     <div class="nova-spacing-grid">
                         <input type="number" 
                                name="nova_cta_design[padding_top]" 
@@ -565,7 +439,7 @@ class Nova_CTA_Manager {
 
                 <!-- Margin Controls -->
                 <div class="nova-spacing-controls nova-margin-controls">
-                    <h4><?php _e('Margin', 'nova-ctas'); ?></h4>
+                    <h4 style="margin-bottom: 0.5rem;"><?php _e('Margin', 'nova-ctas'); ?></h4>
                     <div class="nova-spacing-grid">
                         <input type="number" 
                                name="nova_cta_design[margin_top]" 
@@ -603,53 +477,98 @@ class Nova_CTA_Manager {
                     </div>
                 </div>
             </div>
-            <style>
-                .nova-box-controls {
-                    display: flex;
-                    gap: 2rem;
-                    margin-top: 1rem;
-                }
-                .nova-spacing-controls {
-                    max-width: 200px;
-                }
-                .nova-spacing-grid {
-                    display: grid;
-                    grid-template-columns: 1fr 1fr 1fr;
-                    grid-template-rows: auto auto auto;
-                    gap: 0.5rem;
-                    padding: 1rem;
-                    background: #f0f0f1;
-                    border-radius: 4px;
-                }
-                .nova-spacing-input {
-                    width: 100%;
-                    text-align: center;
-                }
-                .nova-spacing-top {
-                    grid-column: 2;
-                    grid-row: 1;
-                }
-                .nova-spacing-left {
-                    grid-column: 1;
-                    grid-row: 2;
-                }
-                .nova-spacing-right {
-                    grid-column: 3;
-                    grid-row: 2;
-                }
-                .nova-spacing-bottom {
-                    grid-column: 2;
-                    grid-row: 3;
-                }
-                .nova-spacing-center {
-                    grid-column: 2;
-                    grid-row: 2;
-                    background: #fff;
-                    border-radius: 2px;
-                    height: 100%;
-                    min-height: 30px;
-                }
-            </style>
+
+            <div class="nova-field-group" style="max-width: 200px; margin-top: 1.5rem;">
+                <label>
+                    <?php _e('Border Radius:', 'nova-ctas'); ?>
+                    <div class="nova-border-radius-control">
+                        <input type="text" 
+                               name="nova_cta_design[border_radius]" 
+                               value="<?php echo esc_attr($border_radius); ?>" 
+                               class="small-text" 
+                               style="width: 60px;"
+                               maxlength="6">
+                        <div class="nova-unit-selector button-group">
+                            <input type="radio" 
+                                   name="nova_cta_design[border_radius_unit]" 
+                                   value="px" 
+                                   <?php checked($design['border_radius_unit'] ?? 'px', 'px'); ?> 
+                                   id="br_unit_px" 
+                                   class="screen-reader-text">
+                            <label for="br_unit_px" class="button">px</label>
+                            
+                            <input type="radio" 
+                                   name="nova_cta_design[border_radius_unit]" 
+                                   value="rem" 
+                                   <?php checked($design['border_radius_unit'] ?? 'px', 'rem'); ?> 
+                                   id="br_unit_rem" 
+                                   class="screen-reader-text">
+                            <label for="br_unit_rem" class="button">rem</label>
+                            
+                            <input type="radio" 
+                                   name="nova_cta_design[border_radius_unit]" 
+                                   value="%" 
+                                   <?php checked($design['border_radius_unit'] ?? 'px', '%'); ?> 
+                                   id="br_unit_percent" 
+                                   class="screen-reader-text">
+                            <label for="br_unit_percent" class="button">%</label>
+                        </div>
+                    </div>
+                </label>
+            </div>
+
+            <div class="nova-field-group" style="max-width: 400px; margin-top: 1.5rem;">
+                <h4><?php _e('Box Shadow', 'nova-ctas'); ?></h4>
+                <div class="nova-shadow-inputs">
+                    <div class="nova-shadow-row">
+                        <label>
+                            <?php _e('X', 'nova-ctas'); ?>
+                            <input type="number" 
+                                   name="nova_cta_design[shadow_x]" 
+                                   value="<?php echo esc_attr($shadow['x']); ?>" 
+                                   class="tiny-text" 
+                                   style="width: 60px;">
+                        </label>
+                        <label>
+                            <?php _e('Y', 'nova-ctas'); ?>
+                            <input type="number" 
+                                   name="nova_cta_design[shadow_y]" 
+                                   value="<?php echo esc_attr($shadow['y']); ?>" 
+                                   class="tiny-text" 
+                                   style="width: 60px;">
+                        </label>
+                    </div>
+                    
+                    <div class="nova-shadow-row">
+                        <label>
+                            <?php _e('Blur', 'nova-ctas'); ?>
+                            <input type="number" 
+                                   name="nova_cta_design[shadow_blur]" 
+                                   value="<?php echo esc_attr($shadow['blur']); ?>" 
+                                   class="tiny-text" 
+                                   style="width: 60px;">
+                        </label>
+                        <label>
+                            <?php _e('Spread', 'nova-ctas'); ?>
+                            <input type="number" 
+                                   name="nova_cta_design[shadow_spread]" 
+                                   value="<?php echo esc_attr($shadow['spread']); ?>" 
+                                   class="tiny-text" 
+                                   style="width: 60px;">
+                        </label>
+                    </div>
+                    <div class="nova-shadow-row">
+                        <label>
+                            <?php _e('Color', 'nova-ctas'); ?>
+                            <input type="text" 
+                                   name="nova_cta_design[shadow_color]" 
+                                   value="<?php echo esc_attr($shadow['color']); ?>" 
+                                   class="nova-color-picker" 
+                                   style="width: 100%;">
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Background Settings Section -->
@@ -682,25 +601,19 @@ class Nova_CTA_Manager {
             </div>
 
             <div class="nova-field-group">
-                <label>
-                    <?php _e('Background Position:', 'nova-ctas'); ?>
-                    <select name="nova_cta_design[bg_position]">
-                        <option value="center center" <?php selected($bg_position, 'center center'); ?>><?php _e('Center', 'nova-ctas'); ?></option>
-                        <option value="top center" <?php selected($bg_position, 'top center'); ?>><?php _e('Top', 'nova-ctas'); ?></option>
-                        <option value="bottom center" <?php selected($bg_position, 'bottom center'); ?>><?php _e('Bottom', 'nova-ctas'); ?></option>
-                    </select>
-                </label>
+                <select name="nova_cta_design[bg_position]">
+                    <option value="center center" <?php selected($bg_position, 'center center'); ?>><?php _e('Position: Center', 'nova-ctas'); ?></option>
+                    <option value="top center" <?php selected($bg_position, 'top center'); ?>><?php _e('Position: Top', 'nova-ctas'); ?></option>
+                    <option value="bottom center" <?php selected($bg_position, 'bottom center'); ?>><?php _e('Position: Bottom', 'nova-ctas'); ?></option>
+                </select>
             </div>
 
             <div class="nova-field-group">
-                <label>
-                    <?php _e('Background Size:', 'nova-ctas'); ?>
-                    <select name="nova_cta_design[bg_size]">
-                        <option value="cover" <?php selected($bg_size, 'cover'); ?>><?php _e('Cover', 'nova-ctas'); ?></option>
-                        <option value="contain" <?php selected($bg_size, 'contain'); ?>><?php _e('Contain', 'nova-ctas'); ?></option>
-                        <option value="auto" <?php selected($bg_size, 'auto'); ?>><?php _e('Auto', 'nova-ctas'); ?></option>
-                    </select>
-                </label>
+                <select name="nova_cta_design[bg_size]">
+                    <option value="cover" <?php selected($bg_size, 'cover'); ?>><?php _e('Size: Cover', 'nova-ctas'); ?></option>
+                    <option value="contain" <?php selected($bg_size, 'contain'); ?>><?php _e('Size: Contain', 'nova-ctas'); ?></option>
+                    <option value="auto" <?php selected($bg_size, 'auto'); ?>><?php _e('Size: Auto', 'nova-ctas'); ?></option>
+                </select>
             </div>
 
             <div class="nova-field-group">
@@ -723,57 +636,61 @@ class Nova_CTA_Manager {
         <div class="nova-design-section">
             <h3><?php _e('Typography', 'nova-ctas'); ?></h3>
             
-            <div class="nova-field-group">
-                <h4><?php _e('Title', 'nova-ctas'); ?></h4>
-                <div class="nova-field-group">
-                    <label>
-                        <?php _e('Color:', 'nova-ctas'); ?>
-                        <input type="text" name="nova_cta_design[title_color]" value="<?php echo esc_attr($title_color); ?>" class="nova-color-picker">
-                    </label>
+            <div class="nova-typography-controls" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <!-- Title Typography -->
+                <div class="nova-typography-group">
+                    <h4 style="margin-bottom: 1rem;"><?php _e('Title', 'nova-ctas'); ?></h4>
+                    <div class="nova-field-group" style="margin-bottom: 1rem;">
+                        <label>
+                            <?php _e('Color:', 'nova-ctas'); ?>
+                            <input type="text" name="nova_cta_design[title_color]" value="<?php echo esc_attr($title_color); ?>" class="nova-color-picker">
+                        </label>
+                    </div>
+
+                    <div class="nova-field-group" style="margin-bottom: 1rem;">
+                        <label>
+                            <?php _e('Font Size:', 'nova-ctas'); ?>
+                            <input type="text" name="nova_cta_design[title_font_size]" value="<?php echo esc_attr($title_font_size); ?>" class="regular-text" style="width: 100px;">
+                        </label>
+                    </div>
+
+                    <div class="nova-field-group">
+                        <label>
+                            <?php _e('Font Weight:', 'nova-ctas'); ?>
+                            <select name="nova_cta_design[title_font_weight]" style="width: 100px;">
+                                <option value="400" <?php selected($title_font_weight, '400'); ?>><?php _e('Normal', 'nova-ctas'); ?></option>
+                                <option value="700" <?php selected($title_font_weight, '700'); ?>><?php _e('Bold', 'nova-ctas'); ?></option>
+                            </select>
+                        </label>
+                    </div>
                 </div>
 
-                <div class="nova-field-group">
-                    <label>
-                        <?php _e('Font Size:', 'nova-ctas'); ?>
-                        <input type="text" name="nova_cta_design[title_font_size]" value="<?php echo esc_attr($title_font_size); ?>" class="regular-text">
-                    </label>
-                </div>
+                <!-- Body Typography -->
+                <div class="nova-typography-group">
+                    <h4 style="margin-bottom: 1rem;"><?php _e('Body Text', 'nova-ctas'); ?></h4>
+                    <div class="nova-field-group" style="margin-bottom: 1rem;">
+                        <label>
+                            <?php _e('Color:', 'nova-ctas'); ?>
+                            <input type="text" name="nova_cta_design[body_color]" value="<?php echo esc_attr($body_color); ?>" class="nova-color-picker">
+                        </label>
+                    </div>
 
-                <div class="nova-field-group">
-                    <label>
-                        <?php _e('Font Weight:', 'nova-ctas'); ?>
-                        <select name="nova_cta_design[title_font_weight]">
-                            <option value="400" <?php selected($title_font_weight, '400'); ?>><?php _e('Normal', 'nova-ctas'); ?></option>
-                            <option value="700" <?php selected($title_font_weight, '700'); ?>><?php _e('Bold', 'nova-ctas'); ?></option>
-                        </select>
-                    </label>
-                </div>
-            </div>
+                    <div class="nova-field-group" style="margin-bottom: 1rem;">
+                        <label>
+                            <?php _e('Font Size:', 'nova-ctas'); ?>
+                            <input type="text" name="nova_cta_design[body_font_size]" value="<?php echo esc_attr($body_font_size); ?>" class="regular-text" style="width: 100px;">
+                        </label>
+                    </div>
 
-            <div class="nova-field-group">
-                <h4><?php _e('Body Text', 'nova-ctas'); ?></h4>
-                <div class="nova-field-group">
-                    <label>
-                        <?php _e('Color:', 'nova-ctas'); ?>
-                        <input type="text" name="nova_cta_design[body_color]" value="<?php echo esc_attr($body_color); ?>" class="nova-color-picker">
-                    </label>
-                </div>
-
-                <div class="nova-field-group">
-                    <label>
-                        <?php _e('Font Size:', 'nova-ctas'); ?>
-                        <input type="text" name="nova_cta_design[body_font_size]" value="<?php echo esc_attr($body_font_size); ?>" class="regular-text">
-                    </label>
-                </div>
-
-                <div class="nova-field-group">
-                    <label>
-                        <?php _e('Font Weight:', 'nova-ctas'); ?>
-                        <select name="nova_cta_design[body_font_weight]">
-                            <option value="400" <?php selected($body_font_weight, '400'); ?>><?php _e('Normal', 'nova-ctas'); ?></option>
-                            <option value="700" <?php selected($body_font_weight, '700'); ?>><?php _e('Bold', 'nova-ctas'); ?></option>
-                        </select>
-                    </label>
+                    <div class="nova-field-group">
+                        <label>
+                            <?php _e('Font Weight:', 'nova-ctas'); ?>
+                            <select name="nova_cta_design[body_font_weight]" style="width: 100px;">
+                                <option value="400" <?php selected($body_font_weight, '400'); ?>><?php _e('Normal', 'nova-ctas'); ?></option>
+                                <option value="700" <?php selected($body_font_weight, '700'); ?>><?php _e('Bold', 'nova-ctas'); ?></option>
+                            </select>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -782,29 +699,39 @@ class Nova_CTA_Manager {
         <div class="nova-design-section">
             <h3><?php _e('Button', 'nova-ctas'); ?></h3>
             
-            <div class="nova-field-group">
-                <label>
-                    <?php _e('Background Color:', 'nova-ctas'); ?>
-                    <input type="text" name="nova_cta_design[button_bg_color]" value="<?php echo esc_attr($button_bg_color); ?>" class="nova-color-picker">
-                </label>
-            </div>
+            <div class="nova-button-controls" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div class="nova-button-colors">
+                    <div class="nova-field-group" style="margin-bottom: 1rem;">
+                        <label>
+                            <strong><?php _e('Button Colors', 'nova-ctas'); ?></strong>
+                        </label>
+                        <div style="margin-top: 0.5rem;">
+                            <label style="display: block; margin-bottom: 0.5rem;">
+                                <?php _e('Background:', 'nova-ctas'); ?>
+                                <input type="text" name="nova_cta_design[button_bg_color]" value="<?php echo esc_attr($button_bg_color); ?>" class="nova-color-picker">
+                            </label>
+                            <label style="display: block;">
+                                <?php _e('Text:', 'nova-ctas'); ?>
+                                <input type="text" name="nova_cta_design[button_text_color]" value="<?php echo esc_attr($button_text_color); ?>" class="nova-color-picker">
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="nova-field-group">
-                <label>
-                    <?php _e('Text Color:', 'nova-ctas'); ?>
-                    <input type="text" name="nova_cta_design[button_text_color]" value="<?php echo esc_attr($button_text_color); ?>" class="nova-color-picker">
-                </label>
-            </div>
-
-            <div class="nova-field-group">
-                <label>
-                    <?php _e('Style:', 'nova-ctas'); ?>
-                    <select name="nova_cta_design[button_style]">
-                        <option value="solid" <?php selected($button_style, 'solid'); ?>><?php _e('Solid', 'nova-ctas'); ?></option>
-                        <option value="outline" <?php selected($button_style, 'outline'); ?>><?php _e('Outline', 'nova-ctas'); ?></option>
-                        <option value="link" <?php selected($button_style, 'link'); ?>><?php _e('Link', 'nova-ctas'); ?></option>
-                    </select>
-                </label>
+                <div class="nova-button-style">
+                    <div class="nova-field-group">
+                        <label>
+                            <strong><?php _e('Button Style', 'nova-ctas'); ?></strong>
+                            <div style="margin-top: 0.5rem;">
+                                <select name="nova_cta_design[button_style]" style="width: 100%;">
+                                    <option value="solid" <?php selected($button_style, 'solid'); ?>><?php _e('Solid', 'nova-ctas'); ?></option>
+                                    <option value="outline" <?php selected($button_style, 'outline'); ?>><?php _e('Outline', 'nova-ctas'); ?></option>
+                                    <option value="link" <?php selected($button_style, 'link'); ?>><?php _e('Link', 'nova-ctas'); ?></option>
+                                </select>
+                            </div>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
         <?php
