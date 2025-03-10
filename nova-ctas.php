@@ -2,14 +2,14 @@
 /**
  * Plugin Name: Nova CTAs
  * Plugin URI: https://github.com/kbrookes/nova-ctas
- * Description: A WordPress plugin for creating and managing Call To Action buttons
- * Version: 1.2.4
- * Requires at least: 5.0
- * Requires PHP: 7.2
+ * Description: A WordPress plugin for creating and managing Call-to-Action blocks with advanced styling and display options.
+ * Version: 1.2.5
+ * Requires at least: 5.8
+ * Requires PHP: 7.4
  * Author: Kelsey Brookes
  * Author URI: https://github.com/kbrookes
- * License: GPL-2.0+
- * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: nova-ctas
  * Domain Path: /languages
  * GitHub Plugin URI: https://github.com/kbrookes/nova-ctas
@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('NOVA_CTAS_VERSION', '1.2.4');
+define('NOVA_CTAS_VERSION', '1.2.5');
 define('NOVA_CTAS_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('NOVA_CTAS_PLUGIN_URL', plugin_dir_url(__FILE__));
 
