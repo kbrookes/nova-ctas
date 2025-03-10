@@ -1364,10 +1364,19 @@ class Nova_CTA_Manager {
                 $styles .= "color: " . esc_attr($design['title_color']) . " !important;";
             }
             if (!empty($design['title_font_size'])) {
-                $styles .= "font-size: " . esc_attr($design['title_font_size']) . " !important;";
+                $styles .= "font-size: " . esc_attr($design['title_font_size']) . "px !important;";
             }
             if (!empty($design['title_font_weight'])) {
                 $styles .= "font-weight: " . esc_attr($design['title_font_weight']) . " !important;";
+            }
+            $styles .= "line-height: 1.2 !important;";
+            $styles .= "margin: 0 0 0.5em 0 !important;";
+            $styles .= "}";
+
+            // Override any theme styles that might affect the title
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title * {";
+            if (!empty($design['title_color'])) {
+                $styles .= "color: inherit !important;";
             }
             $styles .= "}";
             

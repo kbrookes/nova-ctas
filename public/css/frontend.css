@@ -164,6 +164,7 @@
 .nova-cta {
     position: relative;
     overflow: hidden;
+    margin: 0;
 }
 
 .nova-cta-container {
@@ -172,6 +173,8 @@
     gap: 2rem;
     align-items: center;
     background: transparent !important;
+    margin: 0;
+    padding: 0;
 }
 
 /* Content Styles */
@@ -179,10 +182,11 @@
     display: flex;
     flex-direction: column;
     gap: var(--element-gap, 20px);
+    margin: 0;
 }
 
 .nova-cta-title {
-    margin: 0;
+    margin: 0 0 0.5em 0;
     line-height: 1.2;
 }
 
@@ -217,24 +221,23 @@
 }
 
 .nova-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    line-height: 1.4;
-    font-weight: 600;
-    white-space: nowrap;
-    background-color: #007cba;
-    color: #ffffff;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 4px !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    line-height: 1.4 !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    border: none !important;
 }
 
 .nova-button:hover {
-    background-color: #006ba1;
-    color: #ffffff;
-    text-decoration: none;
+    text-decoration: none !important;
+    opacity: 0.9 !important;
 }
 
 /* Image Styles */
@@ -242,12 +245,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0;
 }
 
 .nova-cta-image img {
     max-width: 100%;
     height: auto;
     display: block;
+    margin: 0;
 }
 
 /* Layout Variations */
@@ -262,17 +267,11 @@
 /* Responsive Styles */
 @media (max-width: 768px) {
     .nova-cta-container {
-        flex-direction: column !important;
-        gap: 1.5rem;
+        gap: 1rem;
     }
-
-    .nova-cta-content,
-    .nova-cta-image {
-        width: 100% !important;
-    }
-
-    .nova-cta-image {
-        order: -1;
+    
+    .nova-cta-content {
+        gap: 15px;
     }
 }
 
