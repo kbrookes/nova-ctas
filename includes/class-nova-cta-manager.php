@@ -152,10 +152,10 @@ class Nova_CTA_Manager {
         <input type="hidden" name="nova_cta_meta_box_present" value="1">
         <div class="nova-cta-editor">
             <div class="nova-tabs">
-                <button type="button" class="nova-tab active" data-tab="content"><?php _e('Content', 'nova-ctas'); ?></button>
-                <button type="button" class="nova-tab" data-tab="design"><?php _e('Design', 'nova-ctas'); ?></button>
-                <button type="button" class="nova-tab" data-tab="display"><?php _e('Display', 'nova-ctas'); ?></button>
-                <button type="button" class="nova-tab" data-tab="relationships"><?php _e('Relationships', 'nova-ctas'); ?></button>
+                <button type="button" class="nova-tab-button active" data-tab="content"><?php _e('Content', 'nova-ctas'); ?></button>
+                <button type="button" class="nova-tab-button" data-tab="design"><?php _e('Design', 'nova-ctas'); ?></button>
+                <button type="button" class="nova-tab-button" data-tab="display"><?php _e('Display', 'nova-ctas'); ?></button>
+                <button type="button" class="nova-tab-button" data-tab="relationships"><?php _e('Relationships', 'nova-ctas'); ?></button>
             </div>
 
             <div class="nova-tab-content active" data-tab="content">

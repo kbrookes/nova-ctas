@@ -78,12 +78,12 @@
 
     // Tab Switching
     function initTabs() {
-        $('.nova-tab').on('click', function(e) {
+        $('.nova-tab-button').on('click', function(e) {
             e.preventDefault();
             console.log('Nova CTAs: Tab clicked:', $(this).data('tab'));
             
             var tab = $(this).data('tab');
-            $('.nova-tab').removeClass('active');
+            $('.nova-tab-button').removeClass('active');
             $(this).addClass('active');
             
             $('.nova-tab-content').removeClass('active');
@@ -96,7 +96,7 @@
         // Restore active tab from sessionStorage
         var activeTab = sessionStorage.getItem('nova_cta_active_tab');
         if (activeTab) {
-            $('.nova-tab[data-tab="' + activeTab + '"]').trigger('click');
+            $('.nova-tab-button[data-tab="' + activeTab + '"]').trigger('click');
         }
     }
 
