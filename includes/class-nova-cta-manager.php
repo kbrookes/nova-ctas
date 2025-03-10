@@ -1076,9 +1076,6 @@ class Nova_CTA_Manager {
 
             // Add title with typography settings
             $title_styles = array();
-            if (!empty($design['title_color'])) {
-                $title_styles[] = 'color: ' . esc_attr($design['title_color']);
-            }
             if (!empty($design['title_font_size'])) {
                 $title_styles[] = 'font-size: ' . esc_attr($design['title_font_size']);
             }
@@ -1330,28 +1327,19 @@ class Nova_CTA_Manager {
             $cta_id = $cta->ID;
             
             // Base CTA container styles
-            $styles .= ".nova-cta-{$cta_id} {";
+            $styles .= "body .nova-cta.nova-cta-{$cta_id} {";
             
             // Background styles
             if (!empty($design['bg_color'])) {
                 $styles .= "background-color: " . esc_attr($design['bg_color']) . ";";
             }
             
-            if (!empty($design['bg_image'])) {
-                $bg_url = wp_get_attachment_url($design['bg_image']);
-                if ($bg_url) {
-                    $styles .= "background-image: url(" . esc_url($bg_url) . ");";
-                    $styles .= "background-position: " . esc_attr($design['bg_position'] ?? 'center center') . ";";
-                    $styles .= "background-size: " . esc_attr($design['bg_size'] ?? 'cover') . ";";
-                }
-            }
-            
-            // Box design
+            // Box design with validation
             if (!empty($design['border_radius'])) {
-                $styles .= "border-radius: " . esc_attr($design['border_radius']) . "px;";
+                $styles .= "border-radius: " . absint($design['border_radius']) . "px;";
             }
             
-            // Padding
+            // Padding with validation
             $padding = array(
                 'top' => isset($design['padding_top']) ? absint($design['padding_top']) : 30,
                 'right' => isset($design['padding_right']) ? absint($design['padding_right']) : 30,
@@ -1365,38 +1353,17 @@ class Nova_CTA_Manager {
                 $padding['left']
             );
             
-            // Margin
-            $margin = array(
-                'top' => isset($design['margin_top']) ? absint($design['margin_top']) : 60,
-                'right' => isset($design['margin_right']) ? absint($design['margin_right']) : 0,
-                'bottom' => isset($design['margin_bottom']) ? absint($design['margin_bottom']) : 60,
-                'left' => isset($design['margin_left']) ? absint($design['margin_left']) : 0
-            );
-            $styles .= sprintf('margin: %dpx %dpx %dpx %dpx;', 
-                $margin['top'], 
-                $margin['right'], 
-                $margin['bottom'], 
-                $margin['left']
-            );
-            
-            // Box shadow
-            if (!empty($design['shadow_x']) || !empty($design['shadow_y']) || !empty($design['shadow_blur']) || !empty($design['shadow_spread'])) {
-                $shadow = sprintf('box-shadow: %dpx %dpx %dpx %dpx %s;',
-                    absint($design['shadow_x'] ?? 0),
-                    absint($design['shadow_y'] ?? 0),
-                    absint($design['shadow_blur'] ?? 0),
-                    absint($design['shadow_spread'] ?? 0),
-                    esc_attr($design['shadow_color'] ?? 'rgba(0,0,0,0.1)')
-                );
-                $styles .= $shadow;
-            }
-            
+            $styles .= "}";
+
+            // Container styles
+            $styles .= "body .nova-cta.nova-cta-{$cta_id} .nova-cta-container {";
+            $styles .= "background: transparent;";
             $styles .= "}";
             
-            // Title styles
-            $styles .= ".nova-cta-{$cta_id} .nova-cta-title {";
+            // Title styles with higher specificity
+            $styles .= "body .nova-cta.nova-cta-{$cta_id} .nova-cta-title {";
             if (!empty($design['title_color'])) {
-                $styles .= "color: " . esc_attr($design['title_color']) . ";";
+                $styles .= "color: " . esc_attr($design['title_color']) . " !important;";
             }
             if (!empty($design['title_font_size'])) {
                 $styles .= "font-size: " . esc_attr($design['title_font_size']) . ";";
@@ -1406,8 +1373,8 @@ class Nova_CTA_Manager {
             }
             $styles .= "}";
             
-            // Content styles
-            $styles .= ".nova-cta-{$cta_id} .nova-cta-content {";
+            // Content styles with higher specificity
+            $styles .= "body .nova-cta.nova-cta-{$cta_id} .nova-cta-content {";
             if (!empty($design['body_color'])) {
                 $styles .= "color: " . esc_attr($design['body_color']) . ";";
             }
@@ -1419,9 +1386,9 @@ class Nova_CTA_Manager {
             }
             $styles .= "}";
             
-            // Button styles
+            // Button styles with higher specificity
             if (!empty($design['button_bg_color'])) {
-                $styles .= ".nova-cta-{$cta_id} .nova-button {";
+                $styles .= "body .nova-cta.nova-cta-{$cta_id} .nova-button {";
                 $styles .= "background-color: " . esc_attr($design['button_bg_color']) . ";";
                 if (!empty($design['button_text_color'])) {
                     $styles .= "color: " . esc_attr($design['button_text_color']) . ";";
@@ -1429,7 +1396,7 @@ class Nova_CTA_Manager {
                 $styles .= "}";
                 
                 // Button hover state
-                $styles .= ".nova-cta-{$cta_id} .nova-button:hover {";
+                $styles .= "body .nova-cta.nova-cta-{$cta_id} .nova-button:hover {";
                 $styles .= "background-color: " . esc_attr($this->adjust_brightness($design['button_bg_color'], -20)) . ";";
                 if (!empty($design['button_text_color'])) {
                     $styles .= "color: " . esc_attr($design['button_text_color']) . ";";
@@ -1437,63 +1404,37 @@ class Nova_CTA_Manager {
                 $styles .= "}";
             }
             
-            // Button style variations
+            // Button style variations with higher specificity
             if (!empty($design['button_style'])) {
                 if ($design['button_style'] === 'outline') {
-                    $styles .= ".nova-cta-{$cta_id} .nova-button {";
+                    $styles .= "body .nova-cta.nova-cta-{$cta_id} .nova-button {";
                     $styles .= "background-color: transparent;";
                     $styles .= "border: 2px solid " . esc_attr($design['button_bg_color']) . ";";
                     $styles .= "color: " . esc_attr($design['button_bg_color']) . ";";
                     $styles .= "}";
                     
-                    $styles .= ".nova-cta-{$cta_id} .nova-button:hover {";
+                    $styles .= "body .nova-cta.nova-cta-{$cta_id} .nova-button:hover {";
                     $styles .= "background-color: " . esc_attr($design['button_bg_color']) . ";";
                     $styles .= "color: " . esc_attr($design['button_text_color']) . ";";
-                    $styles .= "}";
-                } elseif ($design['button_style'] === 'ghost') {
-                    $styles .= ".nova-cta-{$cta_id} .nova-button {";
-                    $styles .= "background-color: transparent;";
-                    $styles .= "border: none;";
-                    $styles .= "color: " . esc_attr($design['button_bg_color']) . ";";
-                    $styles .= "padding: 0.5rem 0;";
-                    $styles .= "position: relative;";
-                    $styles .= "}";
-                    
-                    $styles .= ".nova-cta-{$cta_id} .nova-button::after {";
-                    $styles .= "content: '';";
-                    $styles .= "position: absolute;";
-                    $styles .= "bottom: 0;";
-                    $styles .= "left: 0;";
-                    $styles .= "width: 100%;";
-                    $styles .= "height: 2px;";
-                    $styles .= "background-color: " . esc_attr($design['button_bg_color']) . ";";
-                    $styles .= "transform: scaleX(0);";
-                    $styles .= "transition: transform 0.2s ease;";
-                    $styles .= "}";
-                    
-                    $styles .= ".nova-cta-{$cta_id} .nova-button:hover::after {";
-                    $styles .= "transform: scaleX(1);";
                     $styles .= "}";
                 }
             }
             
-            // Responsive styles
+            // Responsive styles with higher specificity
             $styles .= "@media (max-width: 768px) {";
-            $styles .= ".nova-cta-{$cta_id} {";
+            $styles .= "body .nova-cta.nova-cta-{$cta_id} {";
             $styles .= "padding: " . absint($padding['top']/2) . "px " . absint($padding['right']/2) . "px " . 
                       absint($padding['bottom']/2) . "px " . absint($padding['left']/2) . "px;";
-            $styles .= "margin: " . absint($margin['top']/2) . "px " . absint($margin['right']/2) . "px " . 
-                      absint($margin['bottom']/2) . "px " . absint($margin['left']/2) . "px;";
             $styles .= "}";
             
             if (!empty($design['title_font_size'])) {
-                $styles .= ".nova-cta-{$cta_id} .nova-cta-title {";
+                $styles .= "body .nova-cta.nova-cta-{$cta_id} .nova-cta-title {";
                 $styles .= "font-size: calc(" . esc_attr($design['title_font_size']) . " * 0.85);";
                 $styles .= "}";
             }
             
             if (!empty($design['body_font_size'])) {
-                $styles .= ".nova-cta-{$cta_id} .nova-cta-content {";
+                $styles .= "body .nova-cta.nova-cta-{$cta_id} .nova-cta-content {";
                 $styles .= "font-size: calc(" . esc_attr($design['body_font_size']) . " * 0.9);";
                 $styles .= "}";
             }
