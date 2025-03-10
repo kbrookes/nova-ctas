@@ -1328,7 +1328,7 @@ class Nova_CTA_Manager {
             
             $cta_id = $cta->ID;
             
-            // Base CTA container styles with higher specificity
+            // Base CTA styles with higher specificity
             $styles .= "html body .nova-cta.nova-cta-{$cta_id} {";
             
             // Background styles
@@ -1364,20 +1364,20 @@ class Nova_CTA_Manager {
             
             $styles .= "}";
 
-            // Container styles with higher specificity
+            // Container styles for layout only
             $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-container {";
             $styles .= "background: transparent !important;";
+            $styles .= "margin: 0 !important;";
+            $styles .= "padding: 0 !important;";
             $styles .= "}";
             
             // Title styles with maximum specificity
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h1,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h2,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h3,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h4,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h5,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h6,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title span {";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h1,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h2,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h3,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h4,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h5,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h6 {";
             if (!empty($design['title_color'])) {
                 $styles .= "color: " . esc_attr($design['title_color']) . " !important;";
             }
@@ -1391,14 +1391,18 @@ class Nova_CTA_Manager {
             $styles .= "margin: 0 0 0.5em 0 !important;";
             $styles .= "}";
 
-            // Ensure color inheritance for any nested elements
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title *,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title *:not([style*='color']) {";
+            // Ensure color inheritance for any nested elements within headings
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h1 *,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h2 *,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h3 *,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h4 *,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h5 *,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h6 * {";
             if (!empty($design['title_color'])) {
-                $styles .= "color: " . esc_attr($design['title_color']) . " !important;";
+                $styles .= "color: inherit !important;";
             }
             $styles .= "}";
-            
+
             // Content styles with higher specificity
             $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-content {";
             if (!empty($design['body_color'])) {
@@ -1458,7 +1462,12 @@ class Nova_CTA_Manager {
             $styles .= "}";
             
             if (!empty($design['title_font_size'])) {
-                $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title {";
+                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h1,";
+                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h2,";
+                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h3,";
+                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h4,";
+                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h5,";
+                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h6 {";
                 $styles .= "font-size: calc(" . esc_attr($design['title_font_size']) . " * 0.85) !important;";
                 $styles .= "}";
             }

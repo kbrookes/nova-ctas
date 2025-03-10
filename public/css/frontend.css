@@ -164,6 +164,9 @@
 .nova-cta {
     position: relative;
     overflow: hidden;
+    padding: 2em;
+    margin: 2em 0;
+    border-radius: 4px;
 }
 
 .nova-cta-container {
@@ -172,9 +175,8 @@
     gap: 2rem;
     align-items: center;
     background: transparent !important;
-    margin: 2em 0;
-    padding: 2em;
-    border-radius: 4px;
+    margin: 0;
+    padding: 0;
 }
 
 /* Content Styles */
@@ -185,7 +187,13 @@
     margin: 0;
 }
 
-.nova-cta-title {
+/* Heading Styles */
+.nova-cta h1,
+.nova-cta h2,
+.nova-cta h3,
+.nova-cta h4,
+.nova-cta h5,
+.nova-cta h6 {
     margin: 0 0 0.5em 0;
     line-height: 1.2;
 }
@@ -266,6 +274,11 @@
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+    .nova-cta {
+        padding: 1.5em;
+        margin: 1.5em 0;
+    }
+    
     .nova-cta-container {
         gap: 1rem;
     }
