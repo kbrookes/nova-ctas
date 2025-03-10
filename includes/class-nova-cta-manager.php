@@ -358,15 +358,26 @@ class Nova_CTA_Manager {
             <div class="nova-field-group">
                 <label>
                     <?php _e('Content Alignment:', 'nova-ctas'); ?>
-                    <div class="nova-alignment-controls">
-                        <input type="radio" name="nova_cta_design[content_alignment]" value="left" <?php checked($content_alignment, 'left'); ?> id="align_left">
-                        <label for="align_left" aria-label="<?php esc_attr_e('Align Left', 'nova-ctas'); ?>"><span class="dashicons dashicons-align-left"></span></label>
+                    <div class="nova-alignment-controls button-group">
+                        <input type="radio" name="nova_cta_design[content_alignment]" value="left" <?php checked($content_alignment, 'left'); ?> id="align_left" class="screen-reader-text">
+                        <label for="align_left" class="button" aria-label="<?php esc_attr_e('Align Left', 'nova-ctas'); ?>">
+                            <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-left.svg" alt="<?php esc_attr_e('Align Left', 'nova-ctas'); ?>">
+                        </label>
                         
-                        <input type="radio" name="nova_cta_design[content_alignment]" value="center" <?php checked($content_alignment, 'center'); ?> id="align_center">
-                        <label for="align_center" aria-label="<?php esc_attr_e('Align Center', 'nova-ctas'); ?>"><span class="dashicons dashicons-align-center"></span></label>
+                        <input type="radio" name="nova_cta_design[content_alignment]" value="center" <?php checked($content_alignment, 'center'); ?> id="align_center" class="screen-reader-text">
+                        <label for="align_center" class="button" aria-label="<?php esc_attr_e('Align Center', 'nova-ctas'); ?>">
+                            <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-center.svg" alt="<?php esc_attr_e('Align Center', 'nova-ctas'); ?>">
+                        </label>
                         
-                        <input type="radio" name="nova_cta_design[content_alignment]" value="right" <?php checked($content_alignment, 'right'); ?> id="align_right">
-                        <label for="align_right" aria-label="<?php esc_attr_e('Align Right', 'nova-ctas'); ?>"><span class="dashicons dashicons-align-right"></span></label>
+                        <input type="radio" name="nova_cta_design[content_alignment]" value="right" <?php checked($content_alignment, 'right'); ?> id="align_right" class="screen-reader-text">
+                        <label for="align_right" class="button" aria-label="<?php esc_attr_e('Align Right', 'nova-ctas'); ?>">
+                            <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-right.svg" alt="<?php esc_attr_e('Align Right', 'nova-ctas'); ?>">
+                        </label>
+                        
+                        <input type="radio" name="nova_cta_design[content_alignment]" value="justify" <?php checked($content_alignment, 'justify'); ?> id="align_justify" class="screen-reader-text">
+                        <label for="align_justify" class="button" aria-label="<?php esc_attr_e('Justify', 'nova-ctas'); ?>">
+                            <img src="<?php echo NOVA_CTAS_PLUGIN_URL; ?>assets/icons/text-align-justify.svg" alt="<?php esc_attr_e('Justify', 'nova-ctas'); ?>">
+                        </label>
                     </div>
                 </label>
             </div>
@@ -1359,7 +1370,14 @@ class Nova_CTA_Manager {
             $styles .= "}";
             
             // Title styles with maximum specificity
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title {";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h1,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h2,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h3,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h4,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h5,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title h6,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title span {";
             if (!empty($design['title_color'])) {
                 $styles .= "color: " . esc_attr($design['title_color']) . " !important;";
             }
@@ -1373,10 +1391,11 @@ class Nova_CTA_Manager {
             $styles .= "margin: 0 0 0.5em 0 !important;";
             $styles .= "}";
 
-            // Override any theme styles that might affect the title
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title * {";
+            // Ensure color inheritance for any nested elements
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title *,";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title *:not([style*='color']) {";
             if (!empty($design['title_color'])) {
-                $styles .= "color: inherit !important;";
+                $styles .= "color: " . esc_attr($design['title_color']) . " !important;";
             }
             $styles .= "}";
             
