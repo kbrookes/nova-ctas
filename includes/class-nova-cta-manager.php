@@ -395,84 +395,261 @@ class Nova_CTA_Manager {
         <div class="nova-design-section">
             <h3><?php _e('Box Design', 'nova-ctas'); ?></h3>
             
-            <div class="nova-field-group">
+            <div class="nova-field-group" style="max-width: 200px;">
                 <label>
                     <?php _e('Border Radius:', 'nova-ctas'); ?>
-                    <input type="text" name="nova_cta_design[border_radius]" value="<?php echo esc_attr($border_radius); ?>" class="small-text"> px
+                    <div class="nova-border-radius-control">
+                        <input type="text" 
+                               name="nova_cta_design[border_radius]" 
+                               value="<?php echo esc_attr($border_radius); ?>" 
+                               class="small-text" 
+                               style="width: 60px;"
+                               maxlength="6">
+                        <div class="nova-unit-selector button-group">
+                            <input type="radio" 
+                                   name="nova_cta_design[border_radius_unit]" 
+                                   value="px" 
+                                   <?php checked($design['border_radius_unit'] ?? 'px', 'px'); ?> 
+                                   id="br_unit_px" 
+                                   class="screen-reader-text">
+                            <label for="br_unit_px" class="button">px</label>
+                            
+                            <input type="radio" 
+                                   name="nova_cta_design[border_radius_unit]" 
+                                   value="rem" 
+                                   <?php checked($design['border_radius_unit'] ?? 'px', 'rem'); ?> 
+                                   id="br_unit_rem" 
+                                   class="screen-reader-text">
+                            <label for="br_unit_rem" class="button">rem</label>
+                            
+                            <input type="radio" 
+                                   name="nova_cta_design[border_radius_unit]" 
+                                   value="%" 
+                                   <?php checked($design['border_radius_unit'] ?? 'px', '%'); ?> 
+                                   id="br_unit_percent" 
+                                   class="screen-reader-text">
+                            <label for="br_unit_percent" class="button">%</label>
+                        </div>
+                    </div>
                 </label>
             </div>
 
-            <div class="nova-field-group">
-                <h4><?php _e('Padding', 'nova-ctas'); ?></h4>
-                <div class="nova-spacing-inputs">
-                    <label>
-                        <?php _e('Top', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[padding_top]" value="<?php echo esc_attr($padding['top']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Right', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[padding_right]" value="<?php echo esc_attr($padding['right']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Bottom', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[padding_bottom]" value="<?php echo esc_attr($padding['bottom']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Left', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[padding_left]" value="<?php echo esc_attr($padding['left']); ?>" class="tiny-text">
-                    </label>
-                </div>
-            </div>
-
-            <div class="nova-field-group">
-                <h4><?php _e('Margin', 'nova-ctas'); ?></h4>
-                <div class="nova-spacing-inputs">
-                    <label>
-                        <?php _e('Top', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[margin_top]" value="<?php echo esc_attr($margin['top']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Right', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[margin_right]" value="<?php echo esc_attr($margin['right']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Bottom', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[margin_bottom]" value="<?php echo esc_attr($margin['bottom']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Left', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[margin_left]" value="<?php echo esc_attr($margin['left']); ?>" class="tiny-text">
-                    </label>
-                </div>
-            </div>
-
-            <div class="nova-field-group">
+            <div class="nova-field-group" style="max-width: 400px;">
                 <h4><?php _e('Box Shadow', 'nova-ctas'); ?></h4>
                 <div class="nova-shadow-inputs">
-                    <label>
-                        <?php _e('X Offset', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[shadow_x]" value="<?php echo esc_attr($shadow['x']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Y Offset', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[shadow_y]" value="<?php echo esc_attr($shadow['y']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Blur', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[shadow_blur]" value="<?php echo esc_attr($shadow['blur']); ?>" class="tiny-text">
-                    </label>
-                    <label>
-                        <?php _e('Spread', 'nova-ctas'); ?>
-                        <input type="number" name="nova_cta_design[shadow_spread]" value="<?php echo esc_attr($shadow['spread']); ?>" class="tiny-text">
-                    </label>
+                    <div class="nova-shadow-row">
+                        <label>
+                            <?php _e('X', 'nova-ctas'); ?>
+                            <input type="number" 
+                                   name="nova_cta_design[shadow_x]" 
+                                   value="<?php echo esc_attr($shadow['x']); ?>" 
+                                   class="tiny-text" 
+                                   style="width: 60px;">
+                        </label>
+                        <label>
+                            <?php _e('Y', 'nova-ctas'); ?>
+                            <input type="number" 
+                                   name="nova_cta_design[shadow_y]" 
+                                   value="<?php echo esc_attr($shadow['y']); ?>" 
+                                   class="tiny-text" 
+                                   style="width: 60px;">
+                        </label>
+                    </div>
+                    <div class="nova-shadow-row">
+                        <label>
+                            <?php _e('Blur', 'nova-ctas'); ?>
+                            <input type="number" 
+                                   name="nova_cta_design[shadow_blur]" 
+                                   value="<?php echo esc_attr($shadow['blur']); ?>" 
+                                   class="tiny-text" 
+                                   style="width: 60px;">
+                        </label>
+                        <label>
+                            <?php _e('Spread', 'nova-ctas'); ?>
+                            <input type="number" 
+                                   name="nova_cta_design[shadow_spread]" 
+                                   value="<?php echo esc_attr($shadow['spread']); ?>" 
+                                   class="tiny-text" 
+                                   style="width: 60px;">
+                        </label>
+                    </div>
+                    <div class="nova-shadow-row">
+                        <label>
+                            <?php _e('Color', 'nova-ctas'); ?>
+                            <input type="text" 
+                                   name="nova_cta_design[shadow_color]" 
+                                   value="<?php echo esc_attr($shadow['color']); ?>" 
+                                   class="nova-color-picker" 
+                                   style="width: 100%;">
+                        </label>
+                    </div>
                 </div>
-                <div class="nova-field-group">
-                    <label>
-                        <?php _e('Shadow Color:', 'nova-ctas'); ?>
-                        <input type="text" name="nova_cta_design[shadow_color]" value="<?php echo esc_attr($shadow['color']); ?>" class="nova-color-picker">
-                    </label>
+                <style>
+                    .nova-border-radius-control {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    }
+                    .nova-unit-selector {
+                        display: inline-flex;
+                    }
+                    .nova-unit-selector .button {
+                        min-width: 40px;
+                        text-align: center;
+                    }
+                    .nova-shadow-inputs {
+                        background: #f0f0f1;
+                        padding: 12px;
+                        border-radius: 4px;
+                    }
+                    .nova-shadow-row {
+                        display: flex;
+                        gap: 12px;
+                        margin-bottom: 8px;
+                    }
+                    .nova-shadow-row:last-child {
+                        margin-bottom: 0;
+                    }
+                    .nova-shadow-row label {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 4px;
+                        flex: 1;
+                    }
+                    .nova-shadow-row input[type="number"] {
+                        text-align: right;
+                    }
+                </style>
+            </div>
+
+            <div class="nova-box-controls">
+                <!-- Padding Controls -->
+                <div class="nova-spacing-controls nova-padding-controls">
+                    <h4><?php _e('Padding', 'nova-ctas'); ?></h4>
+                    <div class="nova-spacing-grid">
+                        <input type="number" 
+                               name="nova_cta_design[padding_top]" 
+                               value="<?php echo esc_attr($padding['top']); ?>" 
+                               class="nova-spacing-input nova-spacing-top" 
+                               placeholder="Top"
+                               tabindex="1"
+                               aria-label="<?php esc_attr_e('Padding Top', 'nova-ctas'); ?>">
+                        
+                        <input type="number" 
+                               name="nova_cta_design[padding_left]" 
+                               value="<?php echo esc_attr($padding['left']); ?>" 
+                               class="nova-spacing-input nova-spacing-left" 
+                               placeholder="Left"
+                               tabindex="2"
+                               aria-label="<?php esc_attr_e('Padding Left', 'nova-ctas'); ?>">
+                        
+                        <div class="nova-spacing-center"></div>
+                        
+                        <input type="number" 
+                               name="nova_cta_design[padding_right]" 
+                               value="<?php echo esc_attr($padding['right']); ?>" 
+                               class="nova-spacing-input nova-spacing-right" 
+                               placeholder="Right"
+                               tabindex="3"
+                               aria-label="<?php esc_attr_e('Padding Right', 'nova-ctas'); ?>">
+                        
+                        <input type="number" 
+                               name="nova_cta_design[padding_bottom]" 
+                               value="<?php echo esc_attr($padding['bottom']); ?>" 
+                               class="nova-spacing-input nova-spacing-bottom" 
+                               placeholder="Bottom"
+                               tabindex="4"
+                               aria-label="<?php esc_attr_e('Padding Bottom', 'nova-ctas'); ?>">
+                    </div>
+                </div>
+
+                <!-- Margin Controls -->
+                <div class="nova-spacing-controls nova-margin-controls">
+                    <h4><?php _e('Margin', 'nova-ctas'); ?></h4>
+                    <div class="nova-spacing-grid">
+                        <input type="number" 
+                               name="nova_cta_design[margin_top]" 
+                               value="<?php echo esc_attr($margin['top']); ?>" 
+                               class="nova-spacing-input nova-spacing-top" 
+                               placeholder="Top"
+                               tabindex="5"
+                               aria-label="<?php esc_attr_e('Margin Top', 'nova-ctas'); ?>">
+                        
+                        <input type="number" 
+                               name="nova_cta_design[margin_left]" 
+                               value="<?php echo esc_attr($margin['left']); ?>" 
+                               class="nova-spacing-input nova-spacing-left" 
+                               placeholder="Left"
+                               tabindex="6"
+                               aria-label="<?php esc_attr_e('Margin Left', 'nova-ctas'); ?>">
+                        
+                        <div class="nova-spacing-center"></div>
+                        
+                        <input type="number" 
+                               name="nova_cta_design[margin_right]" 
+                               value="<?php echo esc_attr($margin['right']); ?>" 
+                               class="nova-spacing-input nova-spacing-right" 
+                               placeholder="Right"
+                               tabindex="7"
+                               aria-label="<?php esc_attr_e('Margin Right', 'nova-ctas'); ?>">
+                        
+                        <input type="number" 
+                               name="nova_cta_design[margin_bottom]" 
+                               value="<?php echo esc_attr($margin['bottom']); ?>" 
+                               class="nova-spacing-input nova-spacing-bottom" 
+                               placeholder="Bottom"
+                               tabindex="8"
+                               aria-label="<?php esc_attr_e('Margin Bottom', 'nova-ctas'); ?>">
+                    </div>
                 </div>
             </div>
+            <style>
+                .nova-box-controls {
+                    display: flex;
+                    gap: 2rem;
+                    margin-top: 1rem;
+                }
+                .nova-spacing-controls {
+                    max-width: 200px;
+                }
+                .nova-spacing-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr 1fr;
+                    grid-template-rows: auto auto auto;
+                    gap: 0.5rem;
+                    padding: 1rem;
+                    background: #f0f0f1;
+                    border-radius: 4px;
+                }
+                .nova-spacing-input {
+                    width: 100%;
+                    text-align: center;
+                }
+                .nova-spacing-top {
+                    grid-column: 2;
+                    grid-row: 1;
+                }
+                .nova-spacing-left {
+                    grid-column: 1;
+                    grid-row: 2;
+                }
+                .nova-spacing-right {
+                    grid-column: 3;
+                    grid-row: 2;
+                }
+                .nova-spacing-bottom {
+                    grid-column: 2;
+                    grid-row: 3;
+                }
+                .nova-spacing-center {
+                    grid-column: 2;
+                    grid-row: 2;
+                    background: #fff;
+                    border-radius: 2px;
+                    height: 100%;
+                    min-height: 30px;
+                }
+            </style>
         </div>
 
         <!-- Background Settings Section -->
@@ -832,6 +1009,9 @@ class Nova_CTA_Manager {
         
         // Box Design Settings
         $sanitized['border_radius'] = isset($design['border_radius']) ? sanitize_text_field($design['border_radius']) : '0';
+        $sanitized['border_radius_unit'] = isset($design['border_radius_unit']) && in_array($design['border_radius_unit'], ['px', 'rem', '%']) 
+            ? $design['border_radius_unit'] 
+            : 'px';
         
         // Padding
         $sanitized['padding_top'] = isset($design['padding_top']) ? absint($design['padding_top']) : 30;
@@ -1338,7 +1518,11 @@ class Nova_CTA_Manager {
             
             // Box design with validation
             if (!empty($design['border_radius'])) {
-                $styles .= "border-radius: " . absint($design['border_radius']) . "px !important;";
+                $border_radius = $design['border_radius'];
+                $border_radius_unit = isset($design['border_radius_unit']) && in_array($design['border_radius_unit'], ['px', 'rem', '%']) 
+                    ? $design['border_radius_unit'] 
+                    : 'px';
+                $styles .= "border-radius: " . esc_attr($border_radius) . $border_radius_unit . " !important;";
             }
             
             // Padding with validation
@@ -1372,37 +1556,22 @@ class Nova_CTA_Manager {
             $styles .= "}";
             
             // Title styles with maximum specificity
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h1,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h2,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h3,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h4,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h5,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h6 {";
+            $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title {";
             if (!empty($design['title_color'])) {
-                $styles .= "color: " . esc_attr($design['title_color']) . " !important;";
+                $styles .= "color: " . esc_attr($design['title_color']) . ";";
             }
             if (!empty($design['title_font_size'])) {
-                $styles .= "font-size: " . esc_attr($design['title_font_size']) . "px !important;";
+                $styles .= "font-size: " . esc_attr($design['title_font_size']) . ";";
             }
             if (!empty($design['title_font_weight'])) {
-                $styles .= "font-weight: " . esc_attr($design['title_font_weight']) . " !important;";
+                $styles .= "font-weight: " . esc_attr($design['title_font_weight']) . ";";
             }
-            $styles .= "line-height: 1.2 !important;";
-            $styles .= "margin: 0 0 0.5em 0 !important;";
+            $styles .= "line-height: 1.2;";
+            $styles .= "margin: 0 0 0.5em 0;";
             $styles .= "}";
 
-            // Ensure color inheritance for any nested elements within headings
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h1 *,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h2 *,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h3 *,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h4 *,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h5 *,";
-            $styles .= "html body .nova-cta.nova-cta-{$cta_id} h6 * {";
-            if (!empty($design['title_color'])) {
-                $styles .= "color: inherit !important;";
-            }
-            $styles .= "}";
-
+            // Remove the h1-h6 styles since we're using .nova-cta-title
+            
             // Content styles with higher specificity
             $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-content {";
             if (!empty($design['body_color'])) {
@@ -1462,12 +1631,7 @@ class Nova_CTA_Manager {
             $styles .= "}";
             
             if (!empty($design['title_font_size'])) {
-                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h1,";
-                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h2,";
-                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h3,";
-                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h4,";
-                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h5,";
-                $styles .= "html body .nova-cta.nova-cta-{$cta_id} h6 {";
+                $styles .= "html body .nova-cta.nova-cta-{$cta_id} .nova-cta-title {";
                 $styles .= "font-size: calc(" . esc_attr($design['title_font_size']) . " * 0.85) !important;";
                 $styles .= "}";
             }

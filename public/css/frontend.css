@@ -228,6 +228,12 @@
     justify-content: flex-end;
 }
 
+/* Title Styles */
+.nova-cta-title {
+    display: block;
+}
+
+/* Button Styles */
 .nova-button {
     display: inline-flex !important;
     align-items: center !important;
@@ -241,11 +247,15 @@
     white-space: nowrap !important;
     cursor: pointer !important;
     border: none !important;
+    background-color: #0073aa !important;
+    color: #ffffff !important;
 }
 
 .nova-button:hover {
     text-decoration: none !important;
     opacity: 0.9 !important;
+    background-color: #005177 !important;
+    color: #ffffff !important;
 }
 
 /* Image Styles */
