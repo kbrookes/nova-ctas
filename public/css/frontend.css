@@ -1,16 +1,5 @@
 .ibcta-button {
-    display: inline-block;
-    padding: 10px 20px;
-    background-color: #007cba;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 4px;
-    margin-top: 20px;
-}
-
-.ibcta-button:hover {
-    background-color: #006ba1;
-    color: #fff;
+    display: none !important;
 }
 
 .ibcta-content {
@@ -173,7 +162,6 @@
 
 /* Base CTA Container */
 .nova-cta {
-    margin: 2rem 0;
     position: relative;
     overflow: hidden;
 }
@@ -183,6 +171,7 @@
     flex-wrap: wrap;
     gap: 2rem;
     align-items: center;
+    background: transparent !important;
 }
 
 /* Content Styles */
@@ -212,6 +201,7 @@
 /* Button Styles */
 .nova-cta-button-wrapper {
     display: flex;
+    margin-top: 1rem;
 }
 
 .nova-cta-align-left .nova-cta-button-wrapper {
@@ -237,6 +227,14 @@
     line-height: 1.4;
     font-weight: 600;
     white-space: nowrap;
+    background-color: #007cba;
+    color: #ffffff;
+}
+
+.nova-button:hover {
+    background-color: #006ba1;
+    color: #ffffff;
+    text-decoration: none;
 }
 
 /* Image Styles */
@@ -263,11 +261,6 @@
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-    .nova-cta {
-        padding: 1.5rem;
-        margin: 1.5rem 0;
-    }
-
     .nova-cta-container {
         flex-direction: column !important;
         gap: 1.5rem;
@@ -280,14 +273,6 @@
 
     .nova-cta-image {
         order: -1;
-    }
-
-    .nova-cta-title {
-        font-size: calc(var(--title-font-size, 2rem) * 0.85);
-    }
-
-    .nova-cta-text {
-        font-size: calc(var(--body-font-size, 1rem) * 0.9);
     }
 }
 
